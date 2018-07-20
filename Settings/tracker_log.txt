@@ -1,0 +1,51 @@
+
+
+
+2018/07/12 - batch dir: E:\Studie\Stage Neurobiologie\Videos\Mouse 47\R17
+
+15:24:53 \Data_15
+
+
+
+2018/07/12 - batch dir: E:\Studie\Stage Neurobiologie\Videos\Mouse 47\R17
+
+15:26:35 \Data_15
+	 Time elapsed: 123
+	 # Frames: 516
+	 # Tracked: 471
+	 Speed: 3.83
+	 # Traces: 8138
+
+15:28:37 \Data_17
+	 Time elapsed: 185
+	 # Frames: 718
+	 # Tracked: 661
+	 Speed: 3.57
+	 # Traces: 16040
+
+
+
+
+2018/07/13 - batch dir: E:\Studie\Stage Neurobiologie\Videos\Tracking demo _ Single (row)
+
+11: 0:42 \11162015_M1_R126_0_4
+	 Time elapsed: 144
+	 # Frames: 468
+	 # Tracked: 462
+	 Speed: 3.20
+	 # Traces: 3970
+
+11: 3: 7 \11162015_M1_R126_1_3
+
+
+
+2018/07/13 - batch dir: E:\Studie\Stage Neurobiologie\Videos\Tracking demo _ Single (row)
+
+11: 6:40 \11162015_M1_R126_0_4
+	 Time elapsed: 902
+	 # Frames: 2949
+	 # Tracked: 2885
+	 Speed: 3.20
+	 # Traces: 30288
+
+11:21:41 \11162015_M1_R126_1_4(1)
