@@ -1,5 +1,8 @@
+# Matlab-Whisker-Tracker
+Whisker Tracking Tool
+
 TODO:
+- add bar to update silhouette threshold to GUI
 
-- Add a bar to update silhouette threshold in PS GUI
+- make a Bayesian estimator for clusters
 
-- Make a Bayesian estimator for cluster boundaries
