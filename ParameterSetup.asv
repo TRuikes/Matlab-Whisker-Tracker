@@ -163,7 +163,7 @@ close(h)
 vids = dir(fullfile(Settings.outpath,'*.avi'));
 vidnr = size(vids,1)+1;
 
-Settings.vidout_name = fullfile(Settings.outpath,[sprintf('Video_%d',vidnr) Settings.export_video_raw_extention ]);
+Settings.vidout_name = 
 
 if Settings.export_video_rawtraces
     
@@ -181,7 +181,7 @@ if Settings.export_video_rawtraces
         
     
     
-    vidout = VideoWriter(Settings.vidout_name,'Motion JPEG AVI');
+    vidout = VideoWriter(fullfile(Settings.outpath,[sprintf('Video_%d',vidnr) Settings.export_video_raw_extention ]),'Motion JPEG AVI');
     open(vidout)   
    
     
@@ -220,10 +220,9 @@ end
 files = dir(fullfile(Settings.outpath,'*.mat'));
 vidnr = size(files,1)+1;
 
-Settings.matout_name = fullfile(Settings.outpath, [sprintf('Video_%d',vidnr) '_tracked']);
 Output.Traces = Traces;
 Output.Origins = Origins;
-save(Settings.matout_name ,'Output','Settings')
+save(fullfile(Settings.outpath, [sprintf('Video_%d',vidnr) '_tracked']),'Output','Settings')
 
 
 if Settings.autosave_settings

@@ -93,6 +93,10 @@ for i = 1:size(General.tracker_labels,2)
     plotdata_length = [];
     
     for j = x1_tracker:x2_tracker
+        
+        if isempty(Tracker.Clusters{j})
+            continue
+        end
         idx = find( Tracker.Side{j} == side & Tracker.Clusters{j} == lnr );
         
         for k = 1:length(idx)
@@ -170,8 +174,8 @@ for i = 1:size(General.manual_labels,2)
             plotdata_x(j+1-x1_manual) = Manual.Traces{j}{idx}(end,1);
             plotdata_y(j+1-x1_manual) = Manual.Traces{j}{idx}(end,2);
             plotdata_theta_base(j+1-x1_manual) = Manual.Angles{j}(idx);
-            plotdata_theta_tip(j+1-x1_manual) = Manual.Curvature.theta{j}(idx);
-            plotdata_length(j+1-x1_manual) = size(Manual.Traces{j}{idx},1);
+            plotdata_theta_tip(j+1-x1_manual) = a*Manual.Curvature.theta{j}(idx);
+            plotdata_length(j+1-x1_manual) = a*size(Manual.Traces{j}{idx},1);
 
             
 
@@ -226,6 +230,10 @@ for i = 1:size(General.tracker_labels,2)
     
     
     for j = x1_manual:x2_manual
+        
+        if isempty(Tracker.Clusters{j})
+            continue
+        end
         idx = find( Tracker.Side{j} == side & Tracker.Clusters{j} == lnr );
         
         loopdata_x = [];

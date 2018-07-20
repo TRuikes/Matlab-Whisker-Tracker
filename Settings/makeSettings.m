@@ -13,7 +13,7 @@ Settings.use_external_specfile = 1; % Use if any otherformat than the formats
 Settings.batch_mode = 0; % don't touch this one                                    
                                     
        
-% Tracker export settigns
+% Tracker export settings
 Settings.outpath = 'E:\Studie\Stage Neurobiologie\Videos\Analysed Videos';
 Settings.autosave_settings = 1; % update settings to those chosen in current session
 Settings.export_video_rawtraces = 1; % export video with raw traces in video path
@@ -26,7 +26,7 @@ Settings.export_video_raw_extention = '_rawtraces';
 %% Hidden Tracking Settings
 % Nose tracking
 Settings.TrackNose = 1;
-Settings.Silhouettethreshold = 0.1; % Also used in whisker tracking
+Settings.Silhouettethreshold = 0.3; % Also used in whisker tracking
 Settings.nose_interval = 10; % Interval for sampling video; nr of frames
 
 Settings.object_pixel_ratio = 0.15;

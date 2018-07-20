@@ -22,7 +22,7 @@ for i = x1_tracker:x2_tracker
     
     for j = 1:size(Tracker.Traces{i},2)
          t = Tracker.Traces{i}{j};
-        if isempty(Tracker.Clusters{i})
+        if isempty(Tracker.Clusters{j})
             plot(t(:,2), t(:,1), 'color' , 'k', 'LineWidth',1)
             continue
         end

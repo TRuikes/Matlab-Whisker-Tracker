@@ -9,8 +9,10 @@ clc
 % individual trace, not for a cluster troughout the video...
 
 
-load('E:\Studie\Stage Neurobiologie\Videos\Mouse 47\R17\Data_15_tracked')
-load('E:\Studie\Stage Neurobiologie\Videos\Mouse 47\R17\Data_15_Annotations')
+load('E:\Studie\Stage Neurobiologie\Videos\Analysed Videos\Video_1_tracked')
+mfile = fullfile(Settings.PathName, Settings.FileName);
+mfile = [mfile(1:end-4) '_Annotations'];
+load(mfile)
 Tracker.TracesRaw = Output.Traces;
 Tracker.Traces = Output.Traces;
 Tracker.Objects = Output.Objects;

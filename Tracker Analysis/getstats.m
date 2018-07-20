@@ -45,7 +45,7 @@ General.manual_labels = uniquelabels;
 
 
 %% Get manual frame idx
-keep = zeros(1,size(Tracker.Clusters,2));
+keep = zeros(1,size(Manual.Clusters,2));
 for i = 1:length(keep)
     if ~isempty(Manual.Clusters{i})
         keep(i) = 1;
