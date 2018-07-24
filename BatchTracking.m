@@ -43,6 +43,9 @@ fprintf(log_file, '\r\n\r\n\r\n%2d/%02d/%02d - batch dir: %s\r\n\r\n',time(1),ti
 fprintf('Tracking videos (%d):\n',size(Files,1))
 for i = 1:size(Files,1)
     
+    
+    clear Settings
+    
     try
         
         time_start = clock;
@@ -52,8 +55,31 @@ for i = 1:size(Files,1)
         full_name = fullfile(PathName,[Files{i} Extension]);
         fprintf('(%d/%d) - %s\n',i,size(Files,1),full_name)
         slash_idx = find(full_name == '\',1,'last');
+        
+        load('Settings\Settings.mat')
+        
+        
+        
+        
+       
+        ot = Settings.object_threshold;
+        dl = Settings.Dilationsize;
+        ort = Settings.Origin_threshold;
+        tt = Settings.trace_threshold;
+
+        makeSettings;
+        Settings.object_threshold = ot;
+        Settings.Dilationsze = dl;
+        Settings.Origin_threshold = ort;
+        Settings.trace_threshold = tt;
         Settings.PathName = full_name(1:slash_idx-1);
         Settings.FileName = full_name(slash_idx+1:end);
+        Settings.Video = fullfile(Settings.PathName,Settings.FileName);
+        Settings.batch_mode = 1;
+
+        
+        
+        
         
         if Settings.use_external_specfile
             
@@ -146,7 +172,30 @@ for i = 1:size(Files,1)
         
         Output.Traces = Traces;
         Output.Origins = Origins;
-        save(fullfile(Settings.PathName, [Settings.FileName(1:end-4) '_tracked']),'Output','Settings')
+        
+        qq= 1;
+        Settings.vidout_name = fullfile(Settings.outpath,[sprintf('Video_%d',qq) Settings.export_video_raw_extention '.avi']);
+        if exist(Settings.vidout_name,'file')
+            flag = 1;
+           qq = 2;
+            while flag == 1
+                Settings.vidout_name = fullfile(Settings.outpath,...
+                    [sprintf('Video_%d',qq) Settings.export_video_raw_extention '.avi']);
+                
+                if ~exist(Settings.vidout_name,'file')
+                    flag = 0;
+                else
+                    qq =qq+1;
+                end
+                
+            end
+        end
+        Settings.matout_name = fullfile(Settings.outpath, [sprintf('Video_%d',qq) '_tracked']);
+        
+        
+        
+        
+        save(Settings.matout_name ,'Output','Settings')
         
         
         time_end = clock;
@@ -188,7 +237,7 @@ for i = 1:size(Files,1)
             colormap('gray')
             
             
-            vidout = VideoWriter(fullfile(Settings.PathName,[Settings.FileName(1:end-4) Settings.export_video_raw_extention ]),'Motion JPEG AVI');
+            vidout = VideoWriter(Settings.vidout_name,'Motion JPEG AVI');
             open(vidout)
             
             
@@ -222,6 +271,7 @@ for i = 1:size(Files,1)
         end
     catch
         fprintf(log_file,'\r\n An error occured!\r\n\r\n');
+        
     end
     
 end

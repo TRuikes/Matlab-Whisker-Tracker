@@ -99,4 +99,5 @@ end
 close(h)
 Labels.Side = Side;
 Labels.Angle = vec;
+Labels.division = l;
 

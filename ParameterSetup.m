@@ -160,10 +160,29 @@ close(h)
 
 
 %% Export video
-vids = dir(fullfile(Settings.outpath,'*.avi'));
-vidnr = size(vids,1)+1;
 
-Settings.vidout_name = fullfile(Settings.outpath,[sprintf('Video_%d',vidnr) Settings.export_video_raw_extention ]);
+i = 1;
+Settings.vidout_name = fullfile(Settings.outpath,[sprintf('Video_%d',i) Settings.export_video_raw_extention '.avi']);
+if exist(Settings.vidout_name,'file')
+    flag = 1;
+    i = 2;
+    while flag == 1
+        Settings.vidout_name = fullfile(Settings.outpath,...
+            [sprintf('Video_%d',i) Settings.export_video_raw_extention '.avi']);
+        
+        if ~exist(Settings.vidout_name,'file')
+            flag = 0;
+        else
+            i = i+1;
+        end
+        
+    end
+end
+Settings.matout_name = fullfile(Settings.outpath, [sprintf('Video_%d',i) '_tracked']);
+
+
+
+
 
 if Settings.export_video_rawtraces
     
@@ -217,10 +236,8 @@ end
 
 %% Save tracker info
 
-files = dir(fullfile(Settings.outpath,'*.mat'));
-vidnr = size(files,1)+1;
 
-Settings.matout_name = fullfile(Settings.outpath, [sprintf('Video_%d',vidnr) '_tracked']);
+
 Output.Traces = Traces;
 Output.Origins = Origins;
 save(Settings.matout_name ,'Output','Settings')

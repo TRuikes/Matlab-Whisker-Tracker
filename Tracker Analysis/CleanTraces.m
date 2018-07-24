@@ -1,7 +1,8 @@
-function Traces = CleanTraces(Traces,dist_mid)
+function [Traces,Origins] = CleanTraces(Traces,Origins,dist_mid)
 %%
-if nargin == 1
-    dist_mid = 140;
+
+if nargin == 2
+    dist_mid = 500;
 end
 
 
@@ -31,7 +32,7 @@ mid(:,2) = yfit;
 
 
 Tkeep = {};
-%Okeep = {};
+Okeep = {};
 Tdismiss = {};
 for i = 1:size(Traces,1)
     
@@ -47,7 +48,7 @@ for i = 1:size(Traces,1)
             l = size(Traces{i}{j},1);
             if dist < dist_mid && l > 10
                 Tkeep{i}{keeptick} = Traces{i}{j};
-               % Okeep{i}(keeptick,:) = Origins{i}(j,1:2);
+                Okeep{i}(keeptick,:) = Origins{i}(j,1:2);
                 keeptick = keeptick+1;
             else
                 Tdismiss{i}{dismisstick} = Traces{i}{j};
@@ -60,6 +61,7 @@ for i = 1:size(Traces,1)
 end
 
 Traces = Tkeep;
+Origins = Okeep;
 
 
 %}

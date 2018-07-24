@@ -136,7 +136,7 @@ for i = 1:size(Angles,2)
             if angles(j) <= b1
                 cluster(ridx(j)) = 1;
             elseif angles(j) > b1 && angles(j) <= b2
-                cluster(ridx(j)) = 2;
+                cluster(ridx(j)) = 2; 
             elseif angles(j) > b2
                 cluster(ridx(j)) = 3;
             end
@@ -157,7 +157,8 @@ for i = 1:size(Angles,2)
         end
         
         if any(cluster == 0)
-            keyboard
+            %keyboard
+            cluster(cluster == 0) = NaN;
         end
         
     end

@@ -1,56 +1,84 @@
-outname = Settings.vidout_name;
-idx = find(outname == '_',1,'last');
-outname = [outname(1:idx-1) '_colored'];
-
-vidout = VideoWriter(outname,'Motion JPEG AVI');
-open(vidout)
+printvid = 0;
+printtrackernose = 1;
+printsidediv = 0;
+printrawtraces = 1;
 
 
-x1_tracker = find(General.keep, 1, 'first');
-x2_tracker = find(General.keep, 1, 'last');
+rawcolor = [0 0 0];
+nosecolor = [1 0 0];
+
+
+if printvid
+    outname = 'test';
+    idx = find(outname == '_',1,'last');
+    %outname = [outname(1:idx-1) '_colored'];
+    vidout = VideoWriter(outname,'Motion JPEG AVI');
+    open(vidout)
+end
+
+if printsidediv
+    fn = @(a,b,x) a*x + b;
+    xax = -500:500;
+end
+
+
 
 
 figure(1)
 clf
 colormap gray
-for i = x1_tracker:x2_tracker
+for i = 1:Settings.Nframes
     Settings.Current_frame = i;
+    
+    
+    
     f=  LoadFrame(Settings);
     imagesc(f)
     hold on
     
+    if printtrackernose
+        n = Tracker.Nose(i,:);
+        a = Tracker.Headvec(i,:);
+        scatter(n(:,2), n(:,1),'MarkerFaceColor',nosecolor,'MarkerEdgeColor',nosecolor)
+        quiver(n(:,2), n(:,1), a(:,2)*20, a(:,1)*20,'color',nosecolor)
+    end
     
-    for j = 1:size(Tracker.Traces{i},2)
-         t = Tracker.Traces{i}{j};
-        if isempty(Tracker.Clusters{i})
-            plot(t(:,2), t(:,1), 'color' , 'k', 'LineWidth',1)
-            continue
-        end
-        
-        
-       
-        
-        s = Tracker.Side{i}(j);
-        n = Tracker.Clusters{i}(j);
-        l = sprintf('%s%d',s,n);
-        
-        id = find(strcmp(General.tracker_labels,l));
-        
-        if ~isempty(id)
-            plot(t(:,2), t(:,1), 'color', cc(id,:),'LineWidth',1)
-        else
-            plot(t(:,2), t(:,1),'color','k','LineWidth',1)
+    if printsidediv
+        if i < size(Tracker.div,1)
+            a = Tracker.div(i,:);
+            l = fn(a(1),a(2),xax);
+            plot(xax,l,'color','y','LineStyle','--')
         end
     end
     
-    hold off
+    if printrawtraces
+        if i < size(Tracker.Traces,2)
+            t = Tracker.Traces{i};
+            if ~isempty(t)
+                for j = 1:size(t,2)
+                    plot(t{j}(:,2), t{j}(:,1),'color',rawcolor)
+                end
+            end
+        end
+    end
     
-    fdata = getframe;
-    writeVideo(vidout, fdata.cdata);
+    
+    
+    
+    
+    hold off
+    drawnow
+    
+    if printvid
+        fdata = getframe;
+        writeVideo(vidout, fdata.cdata);
+    end
     
 end
 
 
-close(vidout)
+if printvid
+    close(vidout)
+end
 
 
