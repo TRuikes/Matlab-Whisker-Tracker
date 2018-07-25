@@ -56,37 +56,55 @@ handles.output = hObject;
 handles.mTrackSettings = varargin{1};
 Settings = handles.mTrackSettings;
 h = waitbar(0, 'Loading video samples');
-frameidx = 0:Settings.sample_interval:Settings.Nframes;
+frameidx = round(linspace(1,Settings.Nframes,Settings.n_background_samples));
 
 % Check if enough memory is free for single batch processing
 n_bytes = Settings.Video_width*Settings.Video_heigth*length(frameidx)*8;
 mem = memory;
-if n_bytes > 0.5*mem.MaxPossibleArrayBytes
-    disp('FILE TO LARGE FOR SINGLE BATCH PROCESSING')
-    Objects = zeros(Settings.Video_width, Settings.Video_heigth);
-    keyboard
+if n_bytes > mem.MaxPossibleArrayBytes
+     handles.method = 'sequential';
+else
+    handles.method = 'single-batch';
 end
-SummedFrames = zeros(Settings.Video_width,Settings.Video_heigth,length(frameidx));
+disp(handles.method)
+switch(handles.method)
+    case 'single-batch'
+        SummedFrames = zeros(Settings.Video_width,Settings.Video_heigth,length(frameidx));
 
-for FrameNR = 1:length(frameidx)   
-    Settings.Current_frame = FrameNR;
-    frame = LoadFrame(Settings); 
-    SummedFrames(:,:,FrameNR) = frame; 
-    waitbar(FrameNR/length(frameidx))
-end
-
-for i = 1:size(SummedFrames,1)
-    for j = 1:size(SummedFrames,2)
-        if numel(find(SummedFrames(i,j,:) > Settings.object_threshold )) > Settings.object_pixel_ratio*size(SummedFrames,3)
-            Objects(i,j) = 0;
-        else
-            Objects(i,j) = 1;
+        for FrameNR = 1:length(frameidx)   
+            Settings.Current_frame = frameidx(FrameNR);
+            frame = LoadFrame(Settings); 
+            SummedFrames(:,:,FrameNR) = frame; 
+            waitbar(FrameNR/length(frameidx))
         end
-    end
-    waitbar(i/size(SummedFrames,1),h,'Detecting Objects - Thresholding')    
-end
 
-close(h)
+        for i = 1:size(SummedFrames,1)
+            for j = 1:size(SummedFrames,2)
+                if numel(find(SummedFrames(i,j,:) > Settings.object_threshold )) > Settings.object_pixel_ratio*size(SummedFrames,3)
+                    Objects(i,j) = 0;
+                else
+                    Objects(i,j) = 1;
+                end
+            end
+            waitbar(i/size(SummedFrames,1),h,'Detecting Objects - Thresholding')    
+        end
+
+        close(h)
+        
+    case 'sequential'
+        Objects = zeros(Settings.Video_width, Settings.Video_heigth);
+        
+        for FrameNR = 1:length(frameidx)
+            disp(frameidx(FrameNR))
+            Settings.Current_frame = frameidx(FrameNR);
+            frame=  LoadFrame(Settings);
+            
+            [a,b] = find(frame > Settings.object_threshold);
+            Objects(a,b) = 1;
+            waitbar(FrameNR/length(frameidx),h,'Detecting Objects - Thr seq')
+        end
+        close(h)
+end
 
 imagesc(handles.axes1,Objects)
 colormap('gray')

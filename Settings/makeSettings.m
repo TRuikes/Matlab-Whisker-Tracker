@@ -30,8 +30,8 @@ Settings.Silhouettethreshold = 0.3; % Also used in whisker tracking
 Settings.nose_interval = 10; % Interval for sampling video; nr of frames
 
 Settings.object_pixel_ratio = 0.15;
-Settings.sample_interval = 5; % Interval for sampling video as number of frames
 Settings.dist_from_edge = 5; % minimum distance from frame edge;
+Settings.n_background_samples = 30; % number of sample frames to extract background
 
 
 Settings.extrapolationsize = 7;

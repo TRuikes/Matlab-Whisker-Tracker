@@ -238,3 +238,76 @@
 	 # Traces: 29383
 
 21:13:12 \11162015_M1_R126_1_3
+
+
+
+2018/07/24 - batch dir: E:\Studie\Stage Neurobiologie\Videos\Chronic experiments\Tracking demo _ Single (row)
+
+16: 8:10 \11162015_M1_R126_0_4
+
+
+
+2018/07/24 - batch dir: E:\Studie\Stage Neurobiologie\Videos\Chronic experiments\Tracking demo _ Single (row)
+
+16:11: 3 \11162015_M1_R126_0_4
+
+
+
+2018/07/24 - batch dir: E:\Studie\Stage Neurobiologie\Videos\Chronic experiments\Tracking demo _ Single (row)
+
+16:34:17 \11162015_M1_R126_0_4
+	 Time elapsed: 1089
+	 # Frames: 2949
+	 # Tracked: 2906
+	 Speed: 2.67
+	 # Traces: 30155
+
+16:52:25 \11162015_M1_R126_1_3
+	 Time elapsed: 2107
+	 # Frames: 4769
+	 # Tracked: 4713
+	 Speed: 2.24
+	 # Traces: 59241
+
+17:31:56 \11162015_M1_R126_1_4(1)
+	 Time elapsed: 1153
+	 # Frames: 4035
+	 # Tracked: 3153
+	 Speed: 2.73
+	 # Traces: 47181
+
+17:58:13 \11162015_M1_R126_1_4
+	 Time elapsed: 1903
+	 # Frames: 8235
+	 # Tracked: 3634
+	 Speed: 1.91
+	 # Traces: 37411
+
+18:37:18 \11182015_M1_R137_1_4(1)
+	 Time elapsed: 239
+	 # Frames: 468
+	 # Tracked: 462
+	 Speed: 1.93
+	 # Traces: 4688
+
+18:53: 3 \11182015_M1_R137_1_4(2)
+	 Time elapsed: 1807
+	 # Frames: 4594
+	 # Tracked: 3590
+	 Speed: 1.99
+	 # Traces: 42321
+
+19:23:59 \11182015_M1_R137_1_4
+	 Time elapsed: 683
+	 # Frames: 5732
+	 # Tracked: 1182
+	 Speed: 1.73
+	 # Traces: 14381
+
+19:43:46 \11182015_M1_R137_1_5(1)
+	 Time elapsed: 1314
+	 # Frames: 3266
+	 # Tracked: 2928
+	 Speed: 2.23
+	 # Traces: 22328
+
