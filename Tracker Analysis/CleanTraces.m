@@ -1,11 +1,13 @@
-function out = CleanTraces(Tracker, Settings)
+function Tracker = CleanTraces(Tracker)
 %%
+filterSettings;
 nframes = size( Tracker.Traces,1);
 tracked_frames = ones(1,nframes);
 
 Nose = Tracker.Nose;
 frame_heigth = size(Tracker.Objects, 1);
 frame_width = size(Tracker.Objects,2);
+
 
 
 % Filter points with nose at border
@@ -28,6 +30,8 @@ for i = 1:nframes
     
 end
 
+
+
 % Filter frames too large acceleration on nose
 da = diff(Nose,1);
 da = sqrt( sum( da.^2,2));
@@ -41,14 +45,75 @@ tracked_frames(frame_density < Settings.frame_density) = 0;
 
 
 
+Traces = Tracker.Traces;
+Parameters = Tracker.Parameters;
+% Create boolean cell with tag to keep/reject per trace
+Valid_trace = cell(1,nframes);
+for i = 1:nframes
+   if tracked_frames(i)
+       Valid_trace{i} = ones(1, size(Traces{i},2)); % keep all traces by default
+   else
+       Valid_trace{i} = zeros(1, size(Traces{i},2)); % reject all traces by default
+   end
+end
+
+% Filter based on minimum length and distance from nose
+for i = 1:nframes
+    for j = 1:length(Valid_trace{i})
+        l = Parameters{i}(j,7);
+        d = sqrt(sum( (Parameters{i}(j,9:10)).^2));
+         
+         
+        if l <= Settings.min_trace_length && d > 40
+            Valid_trace{i}(j) = 0;
+        end
+                
+        if d > Settings.max_dist_trace_nose
+            Valid_trace{i}(j) = 0;
+        end
+        
+        
+    end
+end
 
 
-idx = find(tracked_frames);
-idx2 = find(~tracked_frames);
+% Create a new trace set with fits of the measured traces
+Traces_clean = cell(1,nframes);
+Parameters_clean = cell(1, nframes);
+
+h = waitbar(0,'fitting');
+for i = 1:nframes
+    nclean = numel(find(Valid_trace{i}));
+    idx = find(Valid_trace{i});
+    Tsave = cell(1, nclean);
+    Psave = zeros(nclean, size(Parameters{i},2));
+    
+    for j = 1:length(idx)
+        trace = Traces{i}{idx(j)};
+        params = Parameters{i}(idx(j));
+        
+        % leave out trace ending in fit
+        pX = polyfit(1:size(trace,1)- Settings.cutoff,...
+            trace(1:end-Settings.cutoff,1)', Settings.fit_degree);
+        pY = polyfit(1:size(trace,1)- Settings.cutoff,...
+            trace( 1:end-Settings.cutoff,2)', Settings.fit_degree);
+        
+        fitax = 1:size(trace,1)-Settings.cutoff+4;
+        
+       
+        Tsave{j} = [polyval(pX, fitax); polyval(pY, fitax)]';
+        Psave(j,:) = params;      
+   
+    end
+    
+    Traces_clean{i} = Tsave;
+    Parameters_clean{i} = Psave;
+    
+    waitbar(i/nframes)
+end
+        
+close(h)
 
 
-figure(1)
-clf
-hold on
-scatter(idx,Tracker.Nose(idx,2),'g','filled')
-scatter(idx2,Tracker.Nose(idx2,2),'r','filled')
+Tracker.Traces_clean = Traces_clean;
+Tracker.Parameters_clean = Parameters_clean;

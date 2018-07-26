@@ -2,14 +2,14 @@
 % Not overwritten in new sessions
 
 % File details
-Settings.video_extension = '.mp4';
+Settings.video_extension = '.dat';
 Settings.default_video_path = 'E:\Studie\Stage Neurobiologie\Videos\Mouse 47';
 
-Settings.use_external_specfile = 0; % Use if any otherformat than the formats
+Settings.use_external_specfile = 1; % Use if any otherformat than the formats
                                     % supported by the 'VideoReader'
                                     % function:
                                     % https://nl.mathworks.com/help/matlab/import_export/supported-video-file-formats.html
-
+Settings.costum_background = 1;
 Settings.batch_mode = 0; % don't touch this one                                    
                                     
        

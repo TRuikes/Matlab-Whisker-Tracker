@@ -55,6 +55,8 @@ function ObjectDetection_OpeningFcn(hObject, eventdata, handles, varargin)
 handles.output = hObject;
 handles.mTrackSettings = varargin{1};
 Settings = handles.mTrackSettings;
+
+set(handles.checkbox1, 'Value', Settings.costum_background)
 h = waitbar(0, 'Loading video samples');
 frameidx = round(linspace(1,Settings.Nframes,Settings.n_background_samples));
 
@@ -106,6 +108,11 @@ switch(handles.method)
         close(h)
 end
 
+if Settings.costum_background
+    Objects = Costumbackground( Settings, Objects);
+end
+
+
 imagesc(handles.axes1,Objects)
 colormap('gray')
 axis('off')
@@ -156,6 +163,11 @@ for i = 1:size(SummedFrames,1)
     end
     waitbar(i/size(SummedFrames,1),h,'Updating threshold')    
 end
+
+if Settings.costum_background
+    Objects = Costumbackground( Settings, Objects);
+end
+
 imagesc(handles.axes1, Objects)
 axis(handles.axes1,'off')
 close(h)
@@ -183,3 +195,12 @@ function pushbutton1_Callback(hObject, eventdata, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 uiresume(handles.figure1);
+
+
+function pushbutton2_Callback(hObject, eventdata, handles)
+edit Costumbackground.m
+
+function checkbox1_Callback(hObject, eventdata, handles)
+handles.mTrackSettings.costum_background = get(hObject, 'Value');
+guidata(hObject, handles)
+

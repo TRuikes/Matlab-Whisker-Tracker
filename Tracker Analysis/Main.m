@@ -36,24 +36,22 @@ for fidx= 1%:size(files,1)
     
     
      figpath = fullfile(datapath,'figures');
-    FIG_RAWDATA;
+   
     
     
-    out =  CleanTraces(Tracker.Traces, Tracker.Origins); % Filtering noise
+    Tracker =  CleanTraces(Tracker); % Filtering noise
+    %%
+   % Tracker = DetectTouch(Tracker);
     
     
     
-    %Labels = TrackSide(Tracker,Settings); % Assigning side labels
-    %Tracker.Side = Labels.Side;
-    %Tracker.div = Labels.division;
-    %Tracker.Angles = TrackAngles(Tracker.Traces); % Extracting angles for single whiskers
-    
+   
     
     %Tracker.Clusters = ClusterTraces(Tracker.Angles,Tracker.Side); % Assign cluster ID per trace
     %Tracker.Angles = TrackAngles(Tracker.Traces, Labels.Angle); % Extracting angles for single whiskers
     
     %[Tracker.Curvature] = TrackCurvature(Tracker.Traces);
-    %Tracker.Touch = DetectTouch(Tracker.Traces, Tracker.Objects);
+
     
     
     if manualdata
@@ -73,7 +71,7 @@ for fidx= 1%:size(files,1)
     
     General = getstats(Tracker,Manual);
     
-    
+     FIG_RAWDATA;
    
     
     
