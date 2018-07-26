@@ -12,7 +12,13 @@ Settings.min_trace_length = 15;
 
 
 % Fitting settings
-Settings.fit_degree = 2;
+Settings.fit_degree_small = 1;
+Settings.fit_degree_medium = 2;
+Settings.fit_degree_large = 3;
+
+
+
+
 Settings.cutoff = 3; % cutoff length on both endings of trace before fitting
 
 % Touch detection settings

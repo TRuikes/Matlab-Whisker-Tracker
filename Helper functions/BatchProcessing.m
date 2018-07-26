@@ -214,7 +214,21 @@ function pushbutton1_Callback(hObject, eventdata, handles)
 if isfield(handles,'selected_to_track')
 stringout = handles.listbox1.String(handles.selected_to_track);
 handles.listbox2.String(end+1:end+size(stringout,1)) = stringout;
-handles.listbox1.String(handles.selected_to_track) = [];
+
+str = handles.listbox1.String;
+
+new_str = [];
+for i = 1:size(str,1)
+    if ~ismember(i, handles.selected_to_track)
+        new_str{end+1} = str{i};
+    end
+end
+
+
+
+
+
+handles.listbox1.String = str2;
 end
 guidata(hObject, handles)
 
@@ -233,7 +247,17 @@ function pushbutton2_Callback(hObject, eventdata, handles)
 if isfield(handles, 'selected_not_track')
 stringout = handles.listbox2.String(handles.selected_not_track);
 handles.listbox1.String(end+1:end+size(stringout,1)) = stringout;
-handles.listbox2.String(handles.selected_not_track) = [];
+str = handles.listbox2.String;
+
+new_str = [];
+for i = 1:size(str,1)
+    if ~ismember(i, handles.selected_not_track)
+        new_str{end+1} = str{i};
+    end
+end
+
+
+handles.listbox2.String = new_str;
 end
 
 guidata(hObject, handles)

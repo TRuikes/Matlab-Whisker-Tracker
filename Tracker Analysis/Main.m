@@ -12,8 +12,8 @@ files = dir(fullfile(datapath, '*.mat'));
 
 %%
 
-
-for fidx= 1%:size(files,1)
+close all
+for fidx= 1:size(files,1)
     clearvars -except files fidx datapath
     load(fullfile(files(fidx).folder,files(fidx).name))
     mfile = fullfile(Settings.PathName, Settings.FileName);
@@ -31,27 +31,23 @@ for fidx= 1%:size(files,1)
     Tracker.Nose = Output.Nose;
     Tracker.Origins = Output.Origins;
     Tracker.Headvec = Output.AngleVector;
-    
-    Tracker.Parameters = getParams(Tracker);
-    
-    
-     figpath = fullfile(datapath,'figures');
-   
-    
-    
+    Tracker.Parameters = getParams(Tracker,'raw');
+    figpath = fullfile(datapath,'figures');
     Tracker =  CleanTraces(Tracker); % Filtering noise
-    %%
-   % Tracker = DetectTouch(Tracker);
+    Tracker.Parameters_clean = getParams(Tracker,'clean');
+    
+    
+    % Tracker = DetectTouch(Tracker);
     
     
     
-   
+    
     
     %Tracker.Clusters = ClusterTraces(Tracker.Angles,Tracker.Side); % Assign cluster ID per trace
     %Tracker.Angles = TrackAngles(Tracker.Traces, Labels.Angle); % Extracting angles for single whiskers
     
     %[Tracker.Curvature] = TrackCurvature(Tracker.Traces);
-
+    
     
     
     if manualdata
@@ -71,11 +67,72 @@ for fidx= 1%:size(files,1)
     
     General = getstats(Tracker,Manual);
     
-     FIG_RAWDATA;
-   
+    FIG_RAWDATA;
+    FIG_CLEAN;
+    
+    %%
+    idx = find(files(fidx).name == '_',1,'last');
+    vidname = [files(fidx).name(1:idx-1) '_clean'];
+    vidout = fullfile(files(fidx).folder, vidname);
+    v = VideoWriter(vidout,'Motion JPEG AVI');
+    
+    open(v)
+    figure(5)
+    clf
+    colormap gray
+    nframes=  size(Tracker.Traces,1);
+    for ii = 1:nframes
+        Settings.Current_frame = ii;
+        f = LoadFrame(Settings);
+        imagesc(f);
+        hold on
+        
+        
+        for iii = 1:size(Tracker.Traces_clean{ii},2)
+            t = Tracker.Traces_clean{ii}{iii};
+            plot(t(:,2), t(:,1), 'r')
+        end
+        
+        
+        hold off
+
+
+        frame = getframe;
+        writeVideo(v, frame.cdata);
+    end
+    
+    close(v)
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
     
     
 end
-    
-    
-    
+
+
+

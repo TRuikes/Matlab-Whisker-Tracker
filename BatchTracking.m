@@ -61,12 +61,12 @@ for i = 1:size(Files,1)
         
         
         
-       
+        
         ot = Settings.object_threshold;
         dl = Settings.Dilationsize;
         ort = Settings.Origin_threshold;
         tt = Settings.trace_threshold;
-
+        
         makeSettings;
         Settings.object_threshold = ot;
         Settings.Dilationsze = dl;
@@ -76,7 +76,7 @@ for i = 1:size(Files,1)
         Settings.FileName = full_name(slash_idx+1:end);
         Settings.Video = fullfile(Settings.PathName,Settings.FileName);
         Settings.batch_mode = 1;
-
+        
         
         
         
@@ -173,24 +173,25 @@ for i = 1:size(Files,1)
         Output.Traces = Traces;
         Output.Origins = Origins;
         
-        qq= 1;
-        Settings.vidout_name = fullfile(Settings.outpath,[sprintf('Video_%d',qq) Settings.export_video_raw_extention '.avi']);
-        if exist(Settings.vidout_name,'file')
+        
+        ii = 1;
+        Settings.matout_name = fullfile(Settings.outpath, [sprintf('Video_%02d',ii) '_tracked']);
+        if exist(Settings.matout_name, 'file')
             flag = 1;
-           qq = 2;
-            while flag == 1
-                Settings.vidout_name = fullfile(Settings.outpath,...
-                    [sprintf('Video_%d',qq) Settings.export_video_raw_extention '.avi']);
-                
-                if ~exist(Settings.vidout_name,'file')
-                    flag = 0;
+            ii = 2;
+            while flag
+                Settings.matout_name = fullfile(Settings.outpath, [sprintf('Video_%2d',ii) '_tracked']);
+                if ~exist(Settings.matout_name, 'file')
+                    flag = 1;
                 else
-                    qq =qq+1;
+                    ii = ii+1;
                 end
-                
             end
         end
-        Settings.matout_name = fullfile(Settings.outpath, [sprintf('Video_%d',qq) '_tracked']);
+        Settings.vidout_name = fullfile(Settings.outpath,[sprintf('Video_%2d',ii) Settings.export_video_raw_extention '.avi']);
+
+        
+        %%
         
         
         

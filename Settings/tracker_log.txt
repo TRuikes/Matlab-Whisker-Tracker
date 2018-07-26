@@ -311,3 +311,73 @@
 	 Speed: 2.23
 	 # Traces: 22328
 
+
+
+
+2018/07/26 - batch dir: E:\Studie\Stage Neurobiologie\Videos\Analysed Videos\datfiles
+
+20:44:10 \Video_10
+	 Time elapsed: 243
+	 # Frames: 468
+	 # Tracked: 464
+	 Speed: 1.91
+	 # Traces: 13635
+
+
+
+
+2018/07/26 - batch dir: E:\Studie\Stage Neurobiologie\Videos\Analysed Videos\datfiles
+
+23:13:41 \Video_20
+
+ An error occured!
+
+23:13:41 \Video_21
+
+ An error occured!
+
+23:13:41 \Video_22
+
+ An error occured!
+
+23:13:41 \Video_3
+
+
+
+2018/07/26 - batch dir: E:\Studie\Stage Neurobiologie\Videos\Chronic experiments\Tracking demo _ Single (row)
+
+23:33:56 \11162015_M1_R126_1_4(1)
+
+ An error occured!
+
+23:56:59 \11162015_M1_R126_1_4
+
+
+
+2018/07/27 - batch dir: E:\Studie\Stage Neurobiologie\Videos\Chronic experiments\Tracking demo _ Single (row)
+
+ 0: 2:25 \11162015_M1_R126_1_4(1)
+
+
+
+2018/07/27 - batch dir: E:\Studie\Stage Neurobiologie\Videos\Chronic experiments\Tracking demo _ Single (row)
+
+ 0: 5:28 \11182015_M1_R137_1_4(1)
+
+ An error occured!
+
+
+
+
+2018/07/27 - batch dir: E:\Studie\Stage Neurobiologie\Videos\Chronic experiments\Tracking demo _ Single (row)
+
+ 0:18:19 \11182015_M1_R137_1_4(1)
+
+ An error occured!
+
+	 Time elapsed: 884
+	 # Frames: 468
+	 # Tracked: 462
+	 Speed: 0.52
+	 # Traces: 4691
+

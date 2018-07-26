@@ -2,9 +2,9 @@ function Tracker = DetectTouch(Tracker)
 %%
 filterSettings;
 
-fprintf(['ASSUMING: \nr\t-no objects within gap, gap is determined by intensity' ...
+fprintf(['ASSUMING: \n\t-no objects within gap, gap is determined by intensity' ...
     ' profile along y-axis at border of frame\n'])
-fprintf('\t-Only touching within gap (touching above platform is neglected\n')
+fprintf('\t-Only touching within gap (touching above platform is neglected)\n')
 
 
 
@@ -26,7 +26,7 @@ y2(end-10:end) = 1;
 
 
 idx = find(y1 < 0.5 |  y2 < 0.5);
-Objects(idx,:) = 0;
+
 opts = [];
 [opts(:,1), opts(:,2) ] = find(Objects);
 ymax = max(idx) + 5;
@@ -61,12 +61,14 @@ close(h);
 
 Tracker.Touch = Touch;
 %%
-
 %{
+vidout = VideoWriter('ghostwhiskers','MPEG-4');
+open(vidout);
+
 figure(2)
 clf
-for i = 266:nframes
-    clf
+for i = 1:nframes
+   
     if isempty(Traces{i})
         continue
     end
@@ -91,6 +93,9 @@ end
 hold off
 drawnow
 pause(0.05)
-end
 
+frame = getframe;
+writeVideo(vidout, frame);
+end
+close(vidout)
 %}

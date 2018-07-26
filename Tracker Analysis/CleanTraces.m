@@ -60,16 +60,20 @@ end
 % Filter based on minimum length and distance from nose
 for i = 1:nframes
     for j = 1:length(Valid_trace{i})
+        
+     
+        
         l = Parameters{i}(j,7);
         d = sqrt(sum( (Parameters{i}(j,9:10)).^2));
          
          
-        if l <= Settings.min_trace_length && d > 40
+        if l <= Settings.min_trace_length 
             Valid_trace{i}(j) = 0;
+           
         end
                 
         if d > Settings.max_dist_trace_nose
-            Valid_trace{i}(j) = 0;
+            Valid_trace{i}(j) = 0;           
         end
         
         
@@ -78,7 +82,7 @@ end
 
 
 % Create a new trace set with fits of the measured traces
-Traces_clean = cell(1,nframes);
+Traces_clean = cell(nframes,1);
 Parameters_clean = cell(1, nframes);
 
 h = waitbar(0,'fitting');
@@ -90,13 +94,20 @@ for i = 1:nframes
     
     for j = 1:length(idx)
         trace = Traces{i}{idx(j)};
-        params = Parameters{i}(idx(j));
+        params = Parameters{i}(idx(j),:);
         
-        % leave out trace ending in fit
+       if size(trace, 1) < 10
+           fit_degree = Settings.fit_degree_small;
+       elseif size(trace, 1) >= 10 && size(trace, 1) < 20
+           fit_degree = Settings.fit_degree_medium;
+       else
+           fit_degree = Settings.fit_degree_large;
+       end
+        
         pX = polyfit(1:size(trace,1)- Settings.cutoff,...
-            trace(1:end-Settings.cutoff,1)', Settings.fit_degree);
+            trace(1:end-Settings.cutoff,1)', fit_degree);
         pY = polyfit(1:size(trace,1)- Settings.cutoff,...
-            trace( 1:end-Settings.cutoff,2)', Settings.fit_degree);
+            trace( 1:end-Settings.cutoff,2)', fit_degree);
         
         fitax = 1:size(trace,1)-Settings.cutoff+4;
         
@@ -116,4 +127,4 @@ close(h)
 
 
 Tracker.Traces_clean = Traces_clean;
-Tracker.Parameters_clean = Parameters_clean;
+%Tracker.Parameters_clean = Parameters_clean;

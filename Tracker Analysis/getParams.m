@@ -1,4 +1,4 @@
-function Parameters = getParams(Tracker)
+function Parameters = getParams(Tracker,type)
 % In a frame with n traces, find m parameters and store in [n x m] matrix
 % per frame
 % m1 - x-position origin
@@ -18,11 +18,21 @@ function Parameters = getParams(Tracker)
 % m15- nosey
 
 %%
-nparams = 8;
-Parameters = cell(1,size(Tracker.Traces,1));
 
-for i = 1:size(Tracker.Traces,1)
-    ntraces = size(Tracker.Traces{i},2);
+switch(type)
+    case 'raw'
+        Traces = Tracker.Traces;
+    case 'clean'
+        Traces = Tracker.Traces_clean;
+end
+
+nparams = 8;
+Parameters = cell(1,size(Traces,1));
+
+
+
+for i = 1:size(Traces,1)
+    ntraces = size(Traces{i},2);
     headangle  = atan2d(Tracker.Headvec(i,2), Tracker.Headvec(i,1));
     R = [cosd(headangle), -sind(headangle); sind(headangle), cosd(headangle)];
     nose = Tracker.Nose(i,:);
@@ -33,10 +43,10 @@ for i = 1:size(Tracker.Traces,1)
     if ntraces > 0
         m(1:ntraces,1:nparams) = NaN;
         for j = 1:ntraces
-            trace = Tracker.Traces{i}{j};
+            trace = Traces{i}{j};
             % (x,y) position base
-            m(j,1) = Tracker.Origins{i}(j,1); %trace(1,1);
-            m(j,2) = Tracker.Origins{i}(j,2); %trace(1,2);
+            m(j,1) = Traces{i}{j}(3,1); %trace(1,1);
+            m(j,2) = Traces{i}{j}(3,2); %trace(1,2);
             
             % (x,y) position tip
             m(j,3) = trace(end,1);

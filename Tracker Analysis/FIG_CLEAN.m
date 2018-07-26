@@ -74,7 +74,7 @@ for i = 1:ny*nx
     xpos = margx + (xtick-1)*(widthx+spacex);
     ypos = 1-margy-heighty -(ytick-1)*(heighty+spacey);
     
-    ax{i} = axes('Units','normalized','Position',[xpos, ypos, widthx, heighty]);
+    ax{i} = axes('Units','normalized','Position',[xpos, ypos, widthx, heighty]); %#ok<SAGROW>
     
     xtick = xtick+1;
     
@@ -109,22 +109,22 @@ if printtracker
     
     for i = x1_tracker:x2_tracker
         % Generate data for scatterplot
-        ntraces = size(Tracker.Parameters{i},1);
+        ntraces = size(Tracker.Parameters_clean{i},1);
         
         if ntraces > 0
-            pos_xo(end+1:end+ntraces,1:2) = [ones(ntraces,1)*i, Tracker.Parameters{i}(:,1)];
-            pos_yo(end+1:end+ntraces,1:2) = [ones(ntraces, 1)*i, Tracker.Parameters{i}(:,2)];
-            pos_xoc(end+1:end+ntraces,1:2) = [ones(ntraces, 1)*i, Tracker.Parameters{i}(:,9)];
-            pos_yoc(end+1:end+ntraces,1:2) = [ones(ntraces, 1)*i, Tracker.Parameters{i}(:,10)];
-            pos_xt(end+1:end+ntraces,1:2) = [ones(ntraces,1)*i, Tracker.Parameters{i}(:,3)];
-            pos_yt(end+1:end+ntraces,1:2) = [ones(ntraces, 1)*i, Tracker.Parameters{i}(:,4)];
-            pos_xtc(end+1:end+ntraces,1:2) = [ones(ntraces,1)*i, Tracker.Parameters{i}(:,11)];
-            pos_ytc(end+1:end+ntraces,1:2) = [ones(ntraces, 1)*i, Tracker.Parameters{i}(:,12)];
-            theta(end+1:end+ntraces,1:2) = [ones(ntraces, 1)*i, Tracker.Parameters{i}(:,5)];
-            thetac(end+1:end+ntraces,1:2)= [ones(ntraces, 1)*i, Tracker.Parameters{i}(:,6)];
-            nose_x(end+1,1:2) = [i Tracker.Parameters{i}(1,14)];
-            nose_y(end+1,1:2) = [i Tracker.Parameters{i}(1,15)];
-            theta_h(end+1,1:2) = [i Tracker.Parameters{i}(1,13)];
+            pos_xo(end+1:end+ntraces,1:2) = [ones(ntraces,1)*i, Tracker.Parameters_clean{i}(:,1)];
+            pos_yo(end+1:end+ntraces,1:2) = [ones(ntraces, 1)*i, Tracker.Parameters_clean{i}(:,2)];
+            pos_xoc(end+1:end+ntraces,1:2) = [ones(ntraces, 1)*i, Tracker.Parameters_clean{i}(:,9)];
+            pos_yoc(end+1:end+ntraces,1:2) = [ones(ntraces, 1)*i, Tracker.Parameters_clean{i}(:,10)];
+            pos_xt(end+1:end+ntraces,1:2) = [ones(ntraces,1)*i, Tracker.Parameters_clean{i}(:,3)];
+            pos_yt(end+1:end+ntraces,1:2) = [ones(ntraces, 1)*i, Tracker.Parameters_clean{i}(:,4)];
+            pos_xtc(end+1:end+ntraces,1:2) = [ones(ntraces,1)*i, Tracker.Parameters_clean{i}(:,11)];
+            pos_ytc(end+1:end+ntraces,1:2) = [ones(ntraces, 1)*i, Tracker.Parameters_clean{i}(:,12)];
+            theta(end+1:end+ntraces,1:2) = [ones(ntraces, 1)*i, Tracker.Parameters_clean{i}(:,5)];
+            thetac(end+1:end+ntraces,1:2)= [ones(ntraces, 1)*i, Tracker.Parameters_clean{i}(:,6)];
+            nose_x(end+1,1:2) = [i Tracker.Parameters_clean{i}(1,14)]; %#ok<*SAGROW>
+            nose_y(end+1,1:2) = [i Tracker.Parameters_clean{i}(1,15)];
+            theta_h(end+1,1:2) = [i Tracker.Parameters_clean{i}(1,13)];
         end
         
         
