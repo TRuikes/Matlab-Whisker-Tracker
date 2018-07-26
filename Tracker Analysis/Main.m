@@ -12,17 +12,8 @@ files = dir(fullfile(datapath, '*.mat'));
 
 %%
 
-for i = 1:size(files,1)
-    load(fullfile(files(i).folder, files(i).name))
-    fprintf('%s\t%s\n',Settings.PathName,Settings.FileName)
-end
 
-
-
-%%
-
-
-for fidx= 1:size(files,1)
+for fidx= 1%:size(files,1)
     clearvars -except files fidx datapath
     load(fullfile(files(fidx).folder,files(fidx).name))
     mfile = fullfile(Settings.PathName, Settings.FileName);
@@ -31,7 +22,7 @@ for fidx= 1:size(files,1)
         load(mfile)
         manualdata = 1;
     else
-        manualdata =0;
+        manualdata = 0;
     end
     
     
@@ -40,8 +31,16 @@ for fidx= 1:size(files,1)
     Tracker.Nose = Output.Nose;
     Tracker.Origins = Output.Origins;
     Tracker.Headvec = Output.AngleVector;
-    [Tracker.Traces, Tracker.Origins] = CleanTraces(Tracker.Traces, Tracker.Origins); % Filtering noise
+    
     Tracker.Parameters = getParams(Tracker);
+    
+    
+     figpath = fullfile(datapath,'figures');
+    FIG_RAWDATA;
+    
+    
+    out =  CleanTraces(Tracker.Traces, Tracker.Origins); % Filtering noise
+    
     
     
     %Labels = TrackSide(Tracker,Settings); % Assigning side labels
@@ -75,10 +74,7 @@ for fidx= 1:size(files,1)
     General = getstats(Tracker,Manual);
     
     
-        figpath = fullfile(datapath,'figures');
-
-    FIG;
-    
+   
     
     
 end

@@ -1,117 +1,54 @@
-function [Traces,Origins] = CleanTraces(Traces,Origins,dist_mid)
+function out = CleanTraces(Tracker, Settings)
 %%
+nframes = size( Tracker.Traces,1);
+tracked_frames = ones(1,nframes);
 
-if nargin == 2
-    dist_mid = 500;
-end
+Nose = Tracker.Nose;
+frame_heigth = size(Tracker.Objects, 1);
+frame_width = size(Tracker.Objects,2);
 
 
-mid(1:size(Traces,1),1:2) = NaN;
-for i = 1:size(Traces,1)
-    o = [];
-    for j = 1:size(Traces{i},2)
-        if size(Traces{i}{j},1) >= 20
-            o(end+1,:) = Traces{i}{j}(1,:); %#ok<*AGROW>
-        end
+% Filter points with nose at border
+for i = 1:nframes
+    if isnan(Nose(i,1)) || isnan(Nose(i,2))
+        tracked_frames(i) = 0;
+        continue
     end
     
-    if ~isempty(o)
-        mid(i,:) = mean(o,1);
-    end
-end
-
-
-b = 1/10*ones(1,10);
-a = 1;
-xfit  = filter(b,a,mid(:,1));
-xfit = fillgaps(xfit);
-yfit = filter(b,a,mid(:,2));
-yfit = fillgaps(yfit);
-mid(:,1) = xfit;
-mid(:,2) = yfit;
-
-
-Tkeep = {};
-Okeep = {};
-Tdismiss = {};
-for i = 1:size(Traces,1)
-    
-    keeptick = 1;
-    dismisstick = 1;
-    
-    
-    if ~isempty(Traces{i})
-        for j = 1:size(Traces{i},2)
-            pt = Traces{i}{j}(1,:);
-            
-            dist = sqrt( sum(( pt-mid(i,:)).^2));
-            l = size(Traces{i}{j},1);
-            if dist < dist_mid && l > 10
-                Tkeep{i}{keeptick} = Traces{i}{j};
-                Okeep{i}(keeptick,:) = Origins{i}(j,1:2);
-                keeptick = keeptick+1;
-            else
-                Tdismiss{i}{dismisstick} = Traces{i}{j};
-                dismisstick = dismisstick+1;
-            end
-        end
+    if Nose(i,1) < Settings.min_nose_dist || ...
+            Nose(i,2) > frame_heigth - Settings.min_nose_dist
+        tracked_frames(i) = 0;
+        continue
     end
     
+    if Nose(i,2) < Settings.min_nose_dist || ...
+            Nose(i,2) > frame_width - Settings.min_nose_dist
+        tracked_frames(i) = 0;
+    end
     
 end
 
-Traces = Tkeep;
-Origins = Okeep;
+% Filter frames too large acceleration on nose
+da = diff(Nose,1);
+da = sqrt( sum( da.^2,2));
+da = medfilt1(da,3);
+da(end+1) = 0;
+tracked_frames(da > Settings.max_accel) = 0;
+
+% Filter frames with too few neighbouring tracked frames
+frame_density = conv2(tracked_frames, ones(1,10)./10,'same');
+tracked_frames(frame_density < Settings.frame_density) = 0;
 
 
-%}
-%{
-Tkeep = {};
 
-h = waitbar(0,'stuff')
-for i = 1:Settings.Nframes
-    if i > size(Traces,2)
-        break
-    end
-    if ~isempty(Traces{i})
-        keep_idx = ones(1,size(Traces{i},2));
-        
-        for j = 1:size(Traces{i},2)
-            for k = 1:size(Traces{i},2)
-                if j ~= k
-                    d =[];
-                    t1 = Traces{i}{j};
-                    t2 = Traces{i}{j};
-                    for l = 1:size(t1,1)
-                        d(l) = mean(sqrt( sum( (t2-t1(l,:)).^2,2)));
-                    end
-                    
-                    dist = mean(d);
-                    
-                    if dist < 21
-                        if size(t1,1) <= size(t2,1)
-                            keep_idx(j) = 0;
-                        else
-                            keep_idx(k) = 0;
-                        end
-                    end
-                end
-            end
-        end
-        
-        keeptick = 1;
-        for j = 1:length(keep_idx)
-            if keep_idx(j)
-                Tkeep{i}{keeptick} = Traces{i}{j};
-                keeptick = keeptick+1;
-            end
-        end
-        
-        
-    end
-    
-    waitbar(i/Settings.Nframes)
-end
-close(h)
 
-%}
+
+idx = find(tracked_frames);
+idx2 = find(~tracked_frames);
+
+
+figure(1)
+clf
+hold on
+scatter(idx,Tracker.Nose(idx,2),'g','filled')
+scatter(idx2,Tracker.Nose(idx2,2),'r','filled')

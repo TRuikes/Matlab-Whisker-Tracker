@@ -19,9 +19,9 @@ function Parameters = getParams(Tracker)
 
 %%
 nparams = 8;
-Parameters = cell(1,size(Tracker.Traces,2));
+Parameters = cell(1,size(Tracker.Traces,1));
 
-for i = 1:size(Tracker.Traces,2)
+for i = 1:size(Tracker.Traces,1)
     ntraces = size(Tracker.Traces{i},2);
     headangle  = atan2d(Tracker.Headvec(i,2), Tracker.Headvec(i,1));
     R = [cosd(headangle), -sind(headangle); sind(headangle), cosd(headangle)];
@@ -43,7 +43,13 @@ for i = 1:size(Tracker.Traces,2)
             m(j,4) = trace(end,2);
             
             % Theta
-            v = trace(10,:) - trace(1,:);
+            
+            if size(trace,1) >= 10
+                v = trace(10,:) - trace(1,:);
+            else
+                v = trace(5,:) - trace(1,:);
+            end
+            
             m(j,5) = atan2d(v(2), v(1));
             if m(j,5) > 180
                 m(j,5) = m(j,5) - 360;
@@ -63,7 +69,7 @@ for i = 1:size(Tracker.Traces,2)
             m(j,7) = size(trace,1);
             
             % Curvature
-            v2 = trace(end,:) - trace(end-5,:);
+            v2 = trace(end,:) - trace(end-4,:);
             m(j,8) = abs(m(j,6)-atan2d(v2(2), v2(1)));
             
             % corrected origin position
