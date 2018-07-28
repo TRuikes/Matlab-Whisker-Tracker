@@ -381,3 +381,65 @@
 	 Speed: 0.52
 	 # Traces: 4691
 
+
+
+
+2018/07/27 - batch dir: E:\Studie\Stage Neurobiologie\Videos\Human clicked\Mouse 47\R4
+
+18: 9:17 \Data_3
+	 Time elapsed: 815
+	 # Frames: 1882
+	 # Tracked: 1559
+	 Speed: 1.91
+	 # Traces: 57095
+
+18:22:51 \Data_7
+18:28:47 \Data_7
+
+
+
+2018/07/27 - batch dir: E:\Studie\Stage Neurobiologie\Videos\Human clicked\Mouse 47\R4
+
+18:34: 2 \Data_7
+	 Time elapsed: 502
+	 # Frames: 1124
+	 # Tracked: 1049
+	 Speed: 2.09
+	 # Traces: 27115
+
+	 Time elapsed: 718
+	 # Frames: 1124
+	 # Tracked: 1049
+	 Speed: 1.46
+	 # Traces: 27115
+
+
+
+
+2018/07/28 - batch dir: E:\Studie\Stage Neurobiologie\Videos\Human clicked\Mouse 47\R4
+
+
+
+
+2018/07/28 - batch dir: E:\Studie\Stage Neurobiologie\Videos\Human clicked\Mouse 47\R4
+
+
+
+
+2018/07/28 - batch dir: E:\Studie\Stage Neurobiologie\Videos\Human clicked\Mouse 47\R4
+
+
+
+
+2018/07/28 - batch dir: E:\Studie\Stage Neurobiologie\Videos\Human clicked\Mouse 47\R4
+
+
+
+
+2018/07/28 - batch dir: E:\Studie\Stage Neurobiologie\Videos\Human clicked\Mouse 47\R4
+
+
+
+
+2018/07/28 - batch dir: E:\Studie\Stage Neurobiologie\Videos\Human clicked\Mouse 47\R4
+

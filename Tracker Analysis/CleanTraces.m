@@ -1,5 +1,8 @@
-function Tracker = CleanTraces(Tracker)
+function Tracker = CleanTraces(Tracker,measuredNose)
 %%
+if nargin == 1
+    measuredNose = 1;
+end
 filterSettings;
 nframes = size( Tracker.Traces,1);
 tracked_frames = ones(1,nframes);
@@ -8,40 +11,53 @@ Nose = Tracker.Nose;
 frame_heigth = size(Tracker.Objects, 1);
 frame_width = size(Tracker.Objects,2);
 
+if measuredNose
+    % Filter points with nose at border
+    for i = 1:nframes
+        if isnan(Nose(i,1)) || isnan(Nose(i,2))
+            tracked_frames(i) = 0;
+            continue
+        end
+        
+        if Nose(i,1) < Settings.min_nose_dist || ...
+                Nose(i,2) > frame_heigth - Settings.min_nose_dist
+            tracked_frames(i) = 0;
+            continue
+        end
+        
+        if Nose(i,2) < Settings.min_nose_dist || ...
+                Nose(i,2) > frame_width - Settings.min_nose_dist
+            tracked_frames(i) = 0;
+        end
+        
+    end
+    
+    
+    
+    % Filter frames too large acceleration on nose
+    da = diff(Nose,1);
+    da = sqrt( sum( da.^2,2));
+    da = medfilt1(da,3);
+    da(end+1) = 0;
+    tracked_frames(da > Settings.max_accel) = 0;
+    
+    % Filter frames with too few neighbouring tracked frames
+    frame_density = conv2(tracked_frames, ones(1,10)./10,'same');
+    tracked_frames(frame_density < Settings.frame_density) = 0;
+end
+%
+% Fill small frame gaps
 
 
-% Filter points with nose at border
-for i = 1:nframes
-    if isnan(Nose(i,1)) || isnan(Nose(i,2))
-        tracked_frames(i) = 0;
-        continue
+for i = 1:length(tracked_frames)
+    if tracked_frames(i) == 0
+        idx = find( tracked_frames(i+1:end), 1, 'first');
+        if idx <= Settings.max_gap_fill
+            tracked_frames(i:i+idx) = 1;
+        end
     end
-    
-    if Nose(i,1) < Settings.min_nose_dist || ...
-            Nose(i,2) > frame_heigth - Settings.min_nose_dist
-        tracked_frames(i) = 0;
-        continue
-    end
-    
-    if Nose(i,2) < Settings.min_nose_dist || ...
-            Nose(i,2) > frame_width - Settings.min_nose_dist
-        tracked_frames(i) = 0;
-    end
-    
 end
 
-
-
-% Filter frames too large acceleration on nose
-da = diff(Nose,1);
-da = sqrt( sum( da.^2,2));
-da = medfilt1(da,3);
-da(end+1) = 0;
-tracked_frames(da > Settings.max_accel) = 0;
-
-% Filter frames with too few neighbouring tracked frames
-frame_density = conv2(tracked_frames, ones(1,10)./10,'same');
-tracked_frames(frame_density < Settings.frame_density) = 0;
 
 
 
@@ -50,30 +66,32 @@ Parameters = Tracker.Parameters;
 % Create boolean cell with tag to keep/reject per trace
 Valid_trace = cell(1,nframes);
 for i = 1:nframes
-   if tracked_frames(i)
-       Valid_trace{i} = ones(1, size(Traces{i},2)); % keep all traces by default
-   else
-       Valid_trace{i} = zeros(1, size(Traces{i},2)); % reject all traces by default
-   end
+    if tracked_frames(i)
+        Valid_trace{i} = ones(1, size(Traces{i},2)); % keep all traces by default
+    else
+        Valid_trace{i} = zeros(1, size(Traces{i},2)); % reject all traces by default
+    end
 end
 
 % Filter based on minimum length and distance from nose
 for i = 1:nframes
     for j = 1:length(Valid_trace{i})
         
-     
+        
         
         l = Parameters{i}(j,7);
         d = sqrt(sum( (Parameters{i}(j,9:10)).^2));
-         
-         
-        if l <= Settings.min_trace_length 
+        
+        
+        if l <= Settings.min_trace_length
             Valid_trace{i}(j) = 0;
-           
+            
         end
-                
-        if d > Settings.max_dist_trace_nose
-            Valid_trace{i}(j) = 0;           
+        
+        if measuredNose
+            if d > Settings.max_dist_trace_nose
+                Valid_trace{i}(j) = 0;
+            end
         end
         
         
@@ -96,13 +114,13 @@ for i = 1:nframes
         trace = Traces{i}{idx(j)};
         params = Parameters{i}(idx(j),:);
         
-       if size(trace, 1) < 10
-           fit_degree = Settings.fit_degree_small;
-       elseif size(trace, 1) >= 10 && size(trace, 1) < 20
-           fit_degree = Settings.fit_degree_medium;
-       else
-           fit_degree = Settings.fit_degree_large;
-       end
+        if size(trace, 1) < 10
+            fit_degree = Settings.fit_degree_small;
+        elseif size(trace, 1) >= 10 && size(trace, 1) < 20
+            fit_degree = Settings.fit_degree_medium;
+        else
+            fit_degree = Settings.fit_degree_large;
+        end
         
         pX = polyfit(1:size(trace,1)- Settings.cutoff,...
             trace(1:end-Settings.cutoff,1)', fit_degree);
@@ -111,10 +129,10 @@ for i = 1:nframes
         
         fitax = 1:size(trace,1)-Settings.cutoff+4;
         
-       
+        
         Tsave{j} = [polyval(pX, fitax); polyval(pY, fitax)]';
-        Psave(j,:) = params;      
-   
+        Psave(j,:) = params;
+        
     end
     
     Traces_clean{i} = Tsave;
@@ -122,7 +140,7 @@ for i = 1:nframes
     
     waitbar(i/nframes)
 end
-        
+
 close(h)
 
 

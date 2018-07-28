@@ -177,12 +177,6 @@ title(ax{11},'Nose position');          ylim(ax{11},[0 hy]);
 title(ax{12},'Head angle');             ylim(ax{12},[-180 180]);
 
 
-fname = files(fidx).name;
-idx = find(fname == '_',1,'last');
-fname1 = [fname(1:idx-1) '.png'];
-fname2 = fname(1:idx-1);
-
-
 
 
 

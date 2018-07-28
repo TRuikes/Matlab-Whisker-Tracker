@@ -68,7 +68,7 @@ if n_bytes > mem.MaxPossibleArrayBytes
 else
     handles.method = 'single-batch';
 end
-disp(handles.method)
+
 switch(handles.method)
     case 'single-batch'
         SummedFrames = zeros(Settings.Video_width,Settings.Video_heigth,length(frameidx));

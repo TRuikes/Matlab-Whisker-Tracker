@@ -7,18 +7,24 @@ clc
 % The data is not sorted per cluster, that is, the angle is available per
 % individual trace, not for a cluster troughout the video...
 datapath = 'E:\Studie\Stage Neurobiologie\Videos\Analysed Videos';
-files = dir(fullfile(datapath, '*.mat'));
+load(fullfile(datapath,'Tracked_Videos.mat'));
 
 
-%%
+
+printvid = 0;
+figraw = 0;
+figclean = 0;
+figcompare = 1;
+
+
 
 close all
-for fidx= 1:size(files,1)
-    clearvars -except files fidx datapath
-    load(fullfile(files(fidx).folder,files(fidx).name))
+for fidx = 12:13
+    clear Tracker Manual
+    load( Tracked_Videos.ExportNames{fidx} );
     mfile = fullfile(Settings.PathName, Settings.FileName);
-    mfile = [mfile(1:end-4) '_Annotations'];
-    if exist(mfile,'var')
+    mfile = [mfile(1:end-4) '_Annotations.mat'];
+    if exist(mfile,'file')
         load(mfile)
         manualdata = 1;
     else
@@ -33,78 +39,113 @@ for fidx= 1:size(files,1)
     Tracker.Headvec = Output.AngleVector;
     Tracker.Parameters = getParams(Tracker,'raw');
     figpath = fullfile(datapath,'figures');
-    Tracker =  CleanTraces(Tracker); % Filtering noise
+    Tracker =  CleanTraces(Tracker,0); % Filtering noise
     Tracker.Parameters_clean = getParams(Tracker,'clean');
+    Tracker = DetectTouch(Tracker);
     
-    
-    % Tracker = DetectTouch(Tracker);
-    
-    
-    
-    
-    
-    %Tracker.Clusters = ClusterTraces(Tracker.Angles,Tracker.Side); % Assign cluster ID per trace
-    %Tracker.Angles = TrackAngles(Tracker.Traces, Labels.Angle); % Extracting angles for single whiskers
-    
-    %[Tracker.Curvature] = TrackCurvature(Tracker.Traces);
     
     
     
     if manualdata
         Manual.TracesRaw = CurvesByFrame;
         out = ConvertAnnotations(CurvesByFrame); % Store manual data in same format as tracker data
-        Manual.Traces = out.Traces;
-        Manual.manTouch = out.Touch;
-        Manual.Objects = Tracker.Objects;
-        Manual.Side = out.Labels.Side;
-        Manual.Angles = TrackAngles(Manual.Traces, Labels.Angle); % Extract angles for single whiskers
-        Manual.Clusters = out.Labels.Clusters;
-        [Manual.Curvature] = TrackCurvature(Manual.Traces);
-        Manual.Touch = DetectTouch(Manual.Traces, Tracker.Objects);
+        Manual.Traces = out.Traces';
+        Manual.Objects= Output.Objects;
+        Manual.Nose = Output.Nose;
+        Manual.Headvec = Output.AngleVector;
+        Manual.Parameters = getParams(Manual,'raw');
+        Manual.Labels = out.Labels.Full;
+        Manual.Label_names = out.Labels.Names;
+        
+        
+        
     else
         Manual = [];
     end
     
     General = getstats(Tracker,Manual);
     
-    FIG_RAWDATA;
-    FIG_CLEAN;
-    
-    %%
-    idx = find(files(fidx).name == '_',1,'last');
-    vidname = [files(fidx).name(1:idx-1) '_clean'];
-    vidout = fullfile(files(fidx).folder, vidname);
-    v = VideoWriter(vidout,'Motion JPEG AVI');
-    
-    open(v)
-    figure(5)
-    clf
-    colormap gray
-    nframes=  size(Tracker.Traces,1);
-    for ii = 1:nframes
-        Settings.Current_frame = ii;
-        f = LoadFrame(Settings);
-        imagesc(f);
-        hold on
-        
-        
-        for iii = 1:size(Tracker.Traces_clean{ii},2)
-            t = Tracker.Traces_clean{ii}{iii};
-            plot(t(:,2), t(:,1), 'r')
-        end
-        
-        
-        hold off
-
-
-        frame = getframe;
-        writeVideo(v, frame.cdata);
+    if figraw
+        FIG_RAWDATA;
     end
     
-    close(v)
+    if figclean
+        FIG_CLEAN;
+    end
+    
+    if manualdata & figcompare
+        FIG_COMPARE;
+    end
+    %
     
     
-    
+    if printvid
+        vidout = [Tracked_Videos.ExportNames{fidx} '_clean'];
+        
+        v = VideoWriter(vidout,'Motion JPEG AVI');
+        filterSettings;
+        open(v)
+        figure;
+        set(gcf,'position',[100 100 round(Settings.export_video_scaling*Settings.Video_heigth) ...
+            round(Settings.export_video_scaling*Settings.Video_width)]);
+        set(gcf,'Units','pixels')
+        set(gca,'Units','normalized')
+        set(gca,'Position',[0 0 1 1])
+        ax = gca;
+        colormap(ax,'gray')
+        nframes=  size(Tracker.Traces,1);
+        
+        c1 = Settings.colors.tracker_dark;
+        c2 = Settings.colors.manual_light;
+        for ii = 1:nframes
+            Settings.Current_frame = ii;
+            f = LoadFrame(Settings);
+            cla(ax)
+            imagesc(ax,f);
+            hold on
+            
+            
+            for iii = 1:size(Tracker.Traces_clean{ii},2)
+                t = Tracker.Traces_clean{ii}{iii};
+                plot(ax,t(:,2), t(:,1), 'color',c1,'LineWidth',2)
+            end
+            
+            for iii = 1:size(Tracker.Touch{ii},2)
+                if ~isempty(Tracker.Touch{ii}{iii})
+                    pts = Tracker.Touch{ii}{iii};
+                    pt = [];
+                    for iiii = 1:length(pts)
+                        pt(iiii,:) = Tracker.Traces_clean{ii}{iii}(pts(iiii),:);
+                    end
+                    
+                    scatter(ax, pt(:,2), pt(:,1), 'MarkerFaceColor',c1,'MarkerEdgeColor','y')
+                    
+                    
+                end
+            end
+            
+            
+            if manualdata
+                for iii = 1:size(Manual.Traces{ii},2)
+                    t = Manual.Traces{ii}{iii};
+                    plot(ax, t(:,2), t(:,1), 'color', c2,'LineStyle','--','LineWidth',2)
+                end
+                
+                
+                
+            end
+            hold off
+            drawnow
+            
+            frame = getframe;
+            writeVideo(v, frame.cdata);
+            
+        end
+        
+        close(v)
+        
+        
+    end
     
     
     

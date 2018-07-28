@@ -107,6 +107,27 @@ for i = 1:size(CurvesByFrame, 1)
     end
 end
 
+% Find unique labels
+unique_labels = {};
+for i = 1:size(Labelsfull,2)
+    
+    for j = 1:size(Labelsfull{i},2)
+        l = Labelsfull{i}{j};
+        
+        if isempty(unique_labels)
+            unique_labels{1} = l;
+        end
+        
+        if ~any( strcmp(l ,unique_labels) )
+            unique_labels{end+1} = l;
+            
+        end
+        
+    end
+    
+    
+end
+
 
 disp(count)
 Output.TracesSmall = Traces;
@@ -114,5 +135,6 @@ Output.Traces = Tracesfit;
 Output.Labels.Side = Labels;
 Output.Labels.Clusters = Clusters;
 Output.Labels.Full = Labelsfull;
+Output.Labels.Names = unique_labels;
 Output.Touch = Touch;
 

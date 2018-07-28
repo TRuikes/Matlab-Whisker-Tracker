@@ -12,7 +12,7 @@ fprintf('\t-Only touching within gap (touching above platform is neglected)\n')
 Objects = Tracker.Objects;
 Traces = Tracker.Traces_clean;
 ncols = 5;
-nframes = size(Traces,2);
+nframes = size(Traces,1);
 
 y1 = sum(Objects(:,1:ncols),2);
 y1 = y1./ncols;
@@ -37,6 +37,8 @@ opts = opts(idxopts,:); %#ok<FNDSB>
 
 Touch = cell(1,nframes);
 h= waitbar(0,'detect touch');
+
+%%
 for i = 1:nframes
     looptouch = cell(1, size(Traces{i},2));
     
@@ -48,7 +50,7 @@ for i = 1:nframes
         dist = dist.^2;
         dist = sqrt( sum( dist,3));
         [~, tpt] = find(dist <= Settings.dist_object); %#ok<NODEF>
-        looptouch{j} = tpt;
+        looptouch{j} = unique(tpt);
         
     end
     

@@ -27,10 +27,10 @@ end
 Settings.Video = fullfile(Settings.PathName,Settings.FileName);
 
 if Settings.use_external_specfile
-   
+    
     % See manual for requirements of an external specfile
     
-    try        
+    try
         % In our data, for each .dat video file, a corresponding .m file
         % exists with metadata.
         m_file = fullfile(Settings.PathName,Settings.FileName);
@@ -46,7 +46,7 @@ if Settings.use_external_specfile
     
 else
     
-    try 
+    try
         Video_object = VideoReader(Settings.Video);
         Settings.Video_width = Video_object.Height;
         Settings.Video_heigth = Video_object.Width;
@@ -61,7 +61,7 @@ else
         
         
     end
-       
+    
     
 end
 
@@ -77,7 +77,7 @@ end
 
 % Track nose
 Output = TrackNose(Settings, Output);
-%%
+
 % Set parameters on single frame, repeat on multiple frames if desired
 Settings.definite_settings = 0;
 while Settings.definite_settings == 0
@@ -97,11 +97,11 @@ if ~exist('Nose','var')
     Nose(1:n_frames,1:2) = 1;
 else
     Nose = Output.Nose;
-
+    
 end
 
-n_frames_to_track = numel(find(~isnan(Nose(:,1))));
- 
+
+
 n_tracked = 0;
 
 
@@ -113,34 +113,42 @@ h = waitbar(0,'Tracking Video -');
 time_buffer_size = 10;
 timestamps = zeros(1,time_buffer_size);
 
-
+frame_idx = CostumFrameSelection(Settings, Output);
+n_frames_to_track = numel(find(frame_idx));
 
 for framenr = 1:n_frames
     
-    if ~isnan(Nose(framenr,1)) % Use tracked nose as indication to track frame or not
-        Settings.Current_frame = framenr;
-        Output = TrackFrame(Settings, Output);
+    if frame_idx(framenr)
         
-        Traces{framenr} = Output.Traces;
-        Origins{framenr} = Output.Origins;
+        if ~isnan(Nose(framenr,1)) % Use tracked nose as indication to track frame or not
+            Settings.Current_frame = framenr;
+            Output = TrackFrame(Settings, Output);
+            
+            Traces{framenr} = Output.Traces;
+            Origins{framenr} = Output.Origins;
+            
+            
+            % Update timing variables
+            n_tracked = n_tracked+1;
+            time = clock;
+            timestamps = circshift(timestamps,-1);
+            timestamps(end) = time(4)*3600 + time(5)*60 + time(6);
+            elapsed_time = timestamps(end) - timestamps(1);
+            
+            
+            n_frames_left = n_frames_to_track - n_tracked;
+            track_speed = time_buffer_size/elapsed_time;
+            time_left = n_frames_left/track_speed;
+            
+            bar_string = sprintf('Tracking video - %d/%d \n@%1.2fFPS   Time left: %4.0fs',framenr,n_frames,track_speed,time_left);
+            h.Children.Title.String = bar_string;
+            
+            
+        end
         
-        
-        % Update timing variables
-        n_tracked = n_tracked+1;        
-        time = clock;
-        timestamps = circshift(timestamps,-1);
-        timestamps(end) = time(4)*3600 + time(5)*60 + time(6);
-        elapsed_time = timestamps(end) - timestamps(1);
-        
-        
-        n_frames_left = n_frames_to_track - n_tracked;
-        track_speed = time_buffer_size/elapsed_time;
-        time_left = n_frames_left/track_speed;
-        
-        bar_string = sprintf('Tracking video - %d/%d \n@%1.2fFPS   Time left: %4.0fs',framenr,n_frames,track_speed,time_left);
-        h.Children.Title.String = bar_string;
-        
-        
+    else
+        Traces{framenr} = {};
+        Origins{framenr} = {};
     end
     waitbar(framenr/n_frames);
     
@@ -151,88 +159,92 @@ close(h)
 
 
 
-%%
-
-
-
-
-%%
-
-
 %% Export video
-
-i = 1;
-Settings.vidout_name = fullfile(Settings.outpath,[sprintf('Video_%d',i) Settings.export_video_raw_extention '.avi']);
-if exist(Settings.vidout_name,'file')
-    flag = 1;
-    i = 2;
-    while flag == 1
-        Settings.vidout_name = fullfile(Settings.outpath,...
-            [sprintf('Video_%d',i) Settings.export_video_raw_extention '.avi']);
-        
-        if ~exist(Settings.vidout_name,'file')
-            flag = 0;
-        else
-            i = i+1;
-        end
-        
-    end
+ans = '';
+while ~strcmp(ans,'y') & ~strcmp(ans, 'n')
+    ans = inputdlg('Print video?');
 end
-Settings.matout_name = fullfile(Settings.outpath, [sprintf('Video_%d',i) '_tracked']);
+
+if strcmp(ans,'y')
+    export_video = 1;
+else
+    export_video = 0;
+end
 
 
-
-
-
-if Settings.export_video_rawtraces
-    
-    h = waitbar(0,'Writing Video');
-    
-    
-    figure;
-    set(gcf,'position',[100 100 round(Settings.export_video_scaling*Settings.Video_heigth) ...
-        round(Settings.export_video_scaling*Settings.Video_width)]);
-    set(gcf,'Units','pixels')
-    set(gca,'Units','normalized')
-    set(gca,'Position',[0 0 1 1])
-    
-    colormap('gray')
-        
-    
-    
-    vidout = VideoWriter(Settings.vidout_name,'Motion JPEG AVI');
-    open(vidout)   
-   
-    
-    for framenr = 1:Settings.Nframes
-        tic
-        Settings.Current_frame = framenr;
-        frame = LoadFrame(Settings);
-        cla
-        imagesc(frame)
-        axis('off')
-        hold('on')
-        
-        if ~isempty(Traces{framenr})
-            for i =  1:size(Traces{framenr},2)
-                plot(Traces{framenr}{i}(:,2), Traces{framenr}{i}(:,1),'r')
+if export_video
+    i = 1;
+    Settings.vidout_name = fullfile(Settings.outpath,[sprintf('Video_%d',i) Settings.export_video_raw_extention '.avi']);
+    if exist(Settings.vidout_name,'file')
+        flag = 1;
+        i = 2;
+        while flag == 1
+            Settings.vidout_name = fullfile(Settings.outpath,...
+                [sprintf('Video_%d',i) Settings.export_video_raw_extention '.avi']);
+            
+            if ~exist(Settings.vidout_name,'file')
+                flag = 0;
+            else
+                i = i+1;
             end
+            
         end
-        fdata = getframe;
-        writeVideo(vidout, fdata.cdata);
-        hold('off')
-        
-        waitbar(framenr/Settings.Nframes)
-                        
     end
-
-   
-    close(vidout)
-    close(h)
-    close(gcf)
+    Settings.matout_name = fullfile(Settings.outpath, 'ParameterSetup');
+    
+    
+    
+    
+    
+    if Settings.export_video_rawtraces
+        
+        h = waitbar(0,'Writing Video');
+        
+        
+        figure;
+        set(gcf,'position',[100 100 round(Settings.export_video_scaling*Settings.Video_heigth) ...
+            round(Settings.export_video_scaling*Settings.Video_width)]);
+        set(gcf,'Units','pixels')
+        set(gca,'Units','normalized')
+        set(gca,'Position',[0 0 1 1])
+        
+        colormap('gray')
+        
+        
+        
+        vidout = VideoWriter(Settings.vidout_name,'Motion JPEG AVI');
+        open(vidout)
+        
+        
+        for framenr = 1:Settings.Nframes
+            tic
+            Settings.Current_frame = framenr;
+            frame = LoadFrame(Settings);
+            cla
+            imagesc(frame)
+            axis('off')
+            hold('on')
+            
+            if ~isempty(Traces{framenr})
+                for i =  1:size(Traces{framenr},2)
+                    plot(Traces{framenr}{i}(:,2), Traces{framenr}{i}(:,1),'r')
+                end
+            end
+            fdata = getframe;
+            writeVideo(vidout, fdata.cdata);
+            hold('off')
+            
+            waitbar(framenr/Settings.Nframes)
+            
+        end
+        
+        
+        close(vidout)
+        close(h)
+        close(gcf)
+    end
+    
 end
-
-
 
 %% Save tracker info
 

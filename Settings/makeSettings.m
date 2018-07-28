@@ -1,11 +1,15 @@
 %% Interface Settings
+if exist('Settings.mat')
+    costum = load('Settings.mat');
+end
+
 % Not overwritten in new sessions
 
 % File details
-Settings.video_extension = '.mp4';
+Settings.video_extension = '.dat';
 Settings.default_video_path = 'E:\Studie\Stage Neurobiologie\Videos\Mouse 47';
 
-Settings.use_external_specfile = 0; % Use if any otherformat than the formats
+Settings.use_external_specfile = 1; % Use if any otherformat than the formats
                                     % supported by the 'VideoReader'
                                     % function:
                                     % https://nl.mathworks.com/help/matlab/import_export/supported-video-file-formats.html
@@ -29,7 +33,7 @@ Settings.TrackNose = 1;
 Settings.Silhouettethreshold = 0.3; % Also used in whisker tracking
 Settings.nose_interval = 10; % Interval for sampling video; nr of frames
 
-Settings.object_pixel_ratio = 0.15;
+Settings.object_pixel_ratio = 0.05;
 Settings.dist_from_edge = 5; % minimum distance from frame edge;
 Settings.n_background_samples = 30; % number of sample frames to extract background
 
@@ -43,12 +47,19 @@ Settings.stepsize = 5;
 Settings.minimum_traclength = 5;
 
 %% GUI Tracking Settings
-                            
-% Object detection
-Settings.object_threshold = 0.45; % Default threshold
+      
+if ~exist('costum','var')
+    % Object detection
+    Settings.object_threshold = 0.45; % Default threshold
 
-% Frame Tracking
-Settings.Dilationsize = 20;
-Settings.Origin_threshold = 0.05; % Sensitivity towards trace origins
-Settings.trace_threshold = 0.99; % stop criterium for single trace tracking
+    % Frame Tracking
+    Settings.Dilationsize = 20;
+    Settings.Origin_threshold = 0.05; % Sensitivity towards trace origins
+    Settings.trace_threshold = 0.99; % stop criterium for single trace tracking
+else
+    Settings.object_threshold = costum.Settings.object_threshold;
+    Settings.Dilationsize = costum.Settings.Dilationsize;
+    Settings.Origin_threshold = costum.Settings.Origin_threshold;
+    Settings.trace_threshold = costum.Settings.trace_threshold;
+end
 
