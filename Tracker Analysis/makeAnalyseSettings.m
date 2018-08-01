@@ -1,9 +1,8 @@
-
+function Settings = makeAnalyseSettings()
 % Filter parameters for frame rejection
 Settings.min_nose_dist = 40; % minimum required distance of nose from border
 Settings.frame_density = 0.75; % percentage of neighbouring frames with traces
 Settings.max_accel = 5; % Maximum acceleration of nose (px/frameinterval)
-Settings.min_length = 20; % minimum required length (# of entries in raw traces ~ approx 1 stepsize per entry)
 Settings.max_distance = 120; % Maximum distance from estimated midpoint, to be included
 
 Settings.max_gap_fill = 20; % gaps of up to 20 frames are marked as valid
@@ -31,9 +30,3 @@ Settings.dist_object = 5;
 
 
 
-
-cc = cbrewer('div','RdYlGn',12);
-Settings.colors.tracker = cc(12,:)
-Settings.colors.tracker_dark = cc(10,:);
-Settings.colors.manual = cc(2,:);
-Settings.colors.manual_light = cc(4,:);

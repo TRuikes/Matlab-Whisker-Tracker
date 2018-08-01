@@ -1,0 +1,131 @@
+clear
+close all
+
+datapath = 'E:\Studie\Stage Neurobiologie\Videos\VideoDatabase\Tracker Performance';
+load(fullfile(datapath,'Tracked_Videos.mat'));
+
+
+frames = [200 500]; % Index of frame to be displayed (can be single value)
+
+% Switches for printing details on videos
+print_rawtraces = 0; 
+print_trackertouch = 1;
+print_cleantraces = 0;
+print_manualtraces = 1;
+
+export_video = 0;
+
+
+
+
+
+
+%%
+
+for i = 1
+    
+    % Import required files
+    tokens = regexp(Tracked_Videos.ExportNames{i},'\','split');
+    matfile = Tracked_Videos.ExportNames{i};
+    
+    vidfile = Tracked_Videos.ImportNames{i};
+    load(matfile)
+    colors = makeColor;
+    
+    nframes = size(Output.Nose,1);
+    
+    if print_rawtraces && ~exist('Output','var')
+        disp('Raw Tracking Data (''Output'') not available')
+        print_rawtraces = 0;
+    end
+    
+    if print_cleantraces && ~exist('Tracker','var')
+        disp('Cleaned data (''Tracker'') not available (run Main first)')
+        print_cleantraces = 0;
+        
+        if print_trackertouch && ~isfield(Tracker,'Touch')
+            disp('Touch data (''Tracker.Touch'') not available, (run DetectTouch)')
+            print_trackertouch = 0;
+        end
+    end
+    if print_manualtraces && ~exist('Manual','var')
+        disp('Manual data (''Manual'') not available (run Main first')
+        print_manualtraces =0 ;
+    end
+    
+    
+    % Setup figure
+    fig = figure(1);
+    set(gcf,'position',[100 100 round(Settings.export_video_scaling*Settings.Video_heigth) ...
+        round(Settings.export_video_scaling*Settings.Video_width)]);
+    set(gcf,'Units','pixels')
+    set(gca,'Units','normalized')
+    set(gca,'Position',[0 0 1 1])
+    ax = gca;
+    colormap(ax,'gray')
+    
+    
+    
+    for fidx = 200:500
+        
+        Settings.Current_frame = fidx;
+        frame = LoadFrame(Settings);
+        cla(ax);
+        imagesc(ax,frame);
+        hold on
+        
+        if print_rawtraces            
+            if fidx <= size(Output.Traces,1)
+                for j = 1:size( Output.Traces{fidx}, 2)
+                    t = Output.Traces{fidx}{j};
+                    plot(t(:,2), t(:,1),'color',colors.raw)
+                end
+            end
+        end
+        
+        if print_trackertouch
+            if fidx <= size(Tracker.Touch,2)
+                for j = 1:size( Tracker.Touch{fidx}, 2)
+                    if ~isempty(Tracker.Touch{fidx}{j})
+                        pt = Tracker.Traces_clean{fidx}{j}(end,:);
+                        scatter(pt(2), pt(1), 'MarkerFaceColor',colors.tracker_touch,...
+                            'MarkerEdgeColor',colors.tracker_touch,...
+                            'Marker',colors.tracker_touch_style)
+                    end
+                end
+            end
+        end
+        
+        
+        if print_cleantraces
+            if fidx <= size( Tracker.Traces_clean,1)
+                for j = 1:size( Tracker.Traces_clean{fidx}, 2)
+                    t = Tracker.Traces_clean{fidx}{j};
+                    plot(t(:,2), t(:,1), 'color', colors.tracker_light)
+                end
+            end
+        end
+        
+        
+        if print_manualtraces
+            if fidx <= size( Manual.Traces,1)
+                for j = 1:size( Manual.Traces{fidx}, 2)
+                    t = Manual.Traces{fidx}{j};
+                    plot(t(:,2), t(:,1), 'color', colors.manual_light)
+                end
+            end
+        end
+        
+        
+        hold off
+        drawnow
+        
+        
+        
+        
+        
+    end
+    
+    
+    
+end

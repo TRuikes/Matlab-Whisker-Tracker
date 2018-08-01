@@ -3,7 +3,8 @@ function Tracker = CleanTraces(Tracker,measuredNose)
 if nargin == 1
     measuredNose = 1;
 end
-filterSettings;
+Settings = makeAnalyseSettings;
+
 nframes = size( Tracker.Traces,1);
 tracked_frames = ones(1,nframes);
 

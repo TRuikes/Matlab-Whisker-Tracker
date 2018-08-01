@@ -1,3 +1,5 @@
+Settings = filterSettings;
+
 nframes = size(Manual.Traces,1);
 tracked_frames = zeros(1, nframes);
 for i = 1:nframes
@@ -53,5 +55,11 @@ hold on
 scatter(theta_tracker(:,1), theta_tracker(:,2), 'MarkerFaceColor',c2,'MarkerEdgeColor',c2)
 plot(x1:x2,theta_manual(x1:x2,:),'r','LineWidth',1.5)
 
-
-saveas(gcf,[Tracked_Videos.ExportNames{fidx} '_thetas.png'])
+switch(parentfolder)
+    case 'same'
+        saveas(gcf,[Tracked_Videos.ExportNames{fidx} '_thetas.png'])
+    case 'diff'
+     %   saveas(gcf,[datapath, Settings.FileName(1:end-4) '_thetas.png'])
+        
+        
+end

@@ -6,24 +6,28 @@ clc
 %
 % The data is not sorted per cluster, that is, the angle is available per
 % individual trace, not for a cluster troughout the video...
-datapath = 'E:\Studie\Stage Neurobiologie\Videos\Analysed Videos';
-load(fullfile(datapath,'Tracked_Videos.mat'));
+datapath = 'E:\Studie\Stage Neurobiologie\Videos\VideoDatabase\Tracker Performance';
+Files = dir(fullfile(datapath,'*_Annotations_Tracker.mat'));
 
 
 
 printvid = 0;
 figraw = 0;
 figclean = 0;
-figcompare = 1;
+figcompare = 0;
+printtracked = 0;
 
+parentfolder = 'diff';
 
-
+%%
 close all
-for fidx = 12:13
+for fidx = 1:size(Files,1)
     clear Tracker Manual
-    load( Tracked_Videos.ExportNames{fidx} );
-    mfile = fullfile(Settings.PathName, Settings.FileName);
+    loadfile = fullfile(Files(fidx).folder, Files(fidx).name);
+    load(loadfile)
+    mfile = fullfile(datapath, Settings.FileName);
     mfile = [mfile(1:end-4) '_Annotations.mat'];
+    
     if exist(mfile,'file')
         load(mfile)
         manualdata = 1;
@@ -63,7 +67,6 @@ for fidx = 12:13
         Manual = [];
     end
     
-    General = getstats(Tracker,Manual);
     
     if figraw
         FIG_RAWDATA;
@@ -80,7 +83,12 @@ for fidx = 12:13
     
     
     if printvid
-        vidout = [Tracked_Videos.ExportNames{fidx} '_clean'];
+        switch(parentfolder)
+            case 'same'
+                vidout = [Tracked_Videos.ExportNames{fidx} '_clean'];
+            case 'diff'
+                vidout = [datapath '\' tokens{end}];
+        end
         
         v = VideoWriter(vidout,'Motion JPEG AVI');
         filterSettings;
@@ -164,7 +172,7 @@ for fidx = 12:13
     
     
     
-    
+    save(loadfile, 'Output','Tracker','Manual','Settings')
     
     
     

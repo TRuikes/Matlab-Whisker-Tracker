@@ -1,6 +1,6 @@
 function Tracker = DetectTouch(Tracker)
 %%
-filterSettings;
+Settings = makeAnalyseSettings();
 
 fprintf(['ASSUMING: \n\t-no objects within gap, gap is determined by intensity' ...
     ' profile along y-axis at border of frame\n'])
@@ -45,8 +45,8 @@ for i = 1:nframes
     for j = 1:size(Traces{i},2)
         t = Traces{i}{j};
         dist = [];
-        dist(:,:,1) = opts(:,1) - t(:,1)';
-        dist(:,:,2) = opts(:,2) - t(:,2)';
+        dist(:,:,1) = opts(:,1) - t(end,1)';
+        dist(:,:,2) = opts(:,2) - t(end,2)';
         dist = dist.^2;
         dist = sqrt( sum( dist,3));
         [~, tpt] = find(dist <= Settings.dist_object); %#ok<NODEF>

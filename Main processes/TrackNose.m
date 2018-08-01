@@ -38,10 +38,10 @@ for framenr = 1:stepsize:nframes
     
     % Load and process frames
     Settings.Current_frame = framenr;
-    frame = LoadFrame(Settings);
+    frame = LoadFrame(Settings);    
     frame(frame > Settings.Silhouettethreshold) = 0;
     frame(find(frame)) = 1;
-    frame(find(Output.Objects)) = 0;
+    frame(find(Output.Objects)) = 0;   
     frame_x = sum(frame,1);
     frame_y = sum(frame,2);
     
@@ -57,9 +57,8 @@ for framenr = 1:stepsize:nframes
         Base(tick,1:2) = [NaN NaN];
     end
     tick=tick+1;
-    
 end
-
+b1 = Base
 % Get derivative of base position
 movement = diff(Base,1);
 delta = sum(movement,1,'omitnan');
@@ -115,11 +114,12 @@ switch(Settings.TRnosemode)
             % Load and process frames
             Settings.Current_frame = framenr;
             frame = LoadFrame(Settings);
+           
             frame = ~imbinarize(frame,Settings.Silhouettethreshold);
             frame(find(frame)) = 1; %#ok<*FNDSB>
             frame(find(Output.Objects)) = 0;
-            framefull = frame; % Copy for angle detection
-            
+         
+          
             % Filter mouse based on area size
             stats = regionprops(frame,'Area');
             NR = 0;
@@ -131,6 +131,7 @@ switch(Settings.TRnosemode)
             
             if NR > 0
                 frame = bwareafilt(frame,NR,'largest');
+                f3 = frame;
                 frame_x = sum(frame,1);
                 frame_y = sum(frame,2);
             else
@@ -156,6 +157,7 @@ switch(Settings.TRnosemode)
                     PTS = [];
                     PTS(1:3,1:2) = Nose(framenr-interval*3:interval:...
                         framenr-interval,1:2);
+                    
                     if ~any(any(isnan(PTS)))
                         dP = diff(PTS,1);
                         dV = diff(dP,1);
@@ -163,10 +165,11 @@ switch(Settings.TRnosemode)
                         P = round(PTS(3,1:2) + V);
                         
                         dark = zeros(size(frame));
-                        X1 = P(1)-40; if X1<1; X1=1;end
-                        X2 = P(1)+40; if X2>size(frame,1);X2=size(frame,1);end
-                        Y1 = P(2)-40; if Y1<1; Y1=1;end
-                        Y2 = P(2)+40; if Y2>size(frame,2);Y2=size(frame,2);end
+                        psize = 60;
+                        X1 = P(1)-psize; if X1<1; X1=1;end
+                        X2 = P(1)+psize; if X2>size(frame,1);X2=size(frame,1);end
+                        Y1 = P(2)-psize; if Y1<1; Y1=1;end
+                        Y2 = P(2)+psize; if Y2>size(frame,2);Y2=size(frame,2);end
                         dark(X1:X2,Y1:Y2) = 1;
                     end
                     % Extract ROI
@@ -247,8 +250,10 @@ switch(Settings.TRnosemode)
                 
                 % Make circle round the nose
                 theta = 1:1:360;
-                Cx = round(Nose(framenr,2) + 40*sind(theta));
-                Cy = round(Nose(framenr,1) + 40*cosd(theta));
+                Cx = [round(Nose(framenr,2) + 40*sind(theta))];
+                Cx = [Cx, Cx+1];
+                Cy = [round(Nose(framenr,1) + 40*cosd(theta))];
+                Cy = [Cy, Cy+1];
                 IDX = find(Cx>1 & Cx<size(frame,2) & Cy >1 & Cy <size(frame,1));
                 C = sub2ind(size(frame),Cy(IDX),Cx(IDX));
                 
@@ -344,6 +349,8 @@ switch(Settings.TRnosemode)
             drawnow
             %}
             %}
+            
+           
         end
         close(h)
         % Fit nose

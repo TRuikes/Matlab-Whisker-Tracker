@@ -14,9 +14,11 @@ Objects = Output.Objects;
 frame = LoadFrame(Settings);
 
 
+
 % Find Trace origins
 Silhouette = zeros(size(Objects));
 Silhouette( find(frame <= Settings.Silhouettethreshold) ) = 1; %#ok<*FNDSB>
+Silhouette(find(Objects)) = 0;
 Shapes.normal = Silhouette;
 Shapes.normal = imerode(Silhouette,strel('diamond',2));
 %Data.Silhouette( find(Data.Objects) ) = 0;
@@ -65,6 +67,7 @@ Shapes.large = Silhouette;
 Shapes.Objects = Objects;
 Shapes.Frame = frame;
 Shapes.Tracked = Tracked;
+
 
 if ~isempty(OriginsIDX)
     
@@ -117,11 +120,11 @@ if ~isempty(OriginsIDX)
     
     
     traceidx = 1;
-    
+
     Settings.object_tick = 0;
     clc
     for idx = 1:size(Origins,1)
-        
+      
         [Trace, Shapes] = TrackTrace(Settings, Shapes, Origins(idx,1:2));
         
         
@@ -130,6 +133,8 @@ if ~isempty(OriginsIDX)
             Traces{traceidx} = Trace;
             traceidx = traceidx+1;
             
+            
+           
             
         else % cleanup tracking record
             for i = 1:size(Trace,1)

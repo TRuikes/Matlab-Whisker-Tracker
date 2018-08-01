@@ -47,9 +47,18 @@ else
     keyboard
 end
 %}
+nframes = size(Manual.Traces,1);
 
+tracked_frames = zeros(1, nframes);
+for i = 1:nframes
+    if ~isempty(Manual.Traces{i})
+        tracked_frames(i) = 1;
+    end
+end
 x1_tracker = find(General.Tracker_ax, 1, 'first');
 x2_tracker = find(General.Tracker_ax, 1, 'last');
+x1_tracker = find(tracked_frames,1,'first');
+x2_tracker = find(tracked_frames,1,'last');
 
 % Setup figure
 f1 = figure('Units','pixels','Position',[100 100 1400 900]);

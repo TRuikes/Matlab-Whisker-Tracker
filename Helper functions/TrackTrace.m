@@ -52,7 +52,7 @@ first_stepsize = 5;
 
 
 
-
+%%
 
 % Repeat untill snout is found
 while ptflag
@@ -86,8 +86,7 @@ while ptflag
         Trace(end+1,:) = newpt;
     end
     
-    
-    
+   
 end
 
 
@@ -147,7 +146,7 @@ else
 end
 
 
-
+%%
 
 
 Cidx = unique(sub2ind(size(frame),Cx,Cy));
@@ -176,7 +175,7 @@ HalfCircle = Settings.circle_start:Settings.circle_end;
 
 
 noiseflag = 0;
-
+%%
 while ptflag
     vt = Trace(end,:) - Trace(end-1,:);
     

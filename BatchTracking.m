@@ -32,7 +32,7 @@ if exist(fullfile(Settings.outpath,'Tracked_Videos.mat'), 'file')
     nfiles = size(Files,1);
     nvids = size(Tracked_Videos,1);
     for i = 1:size(Files,1)
-        ExportNames{i,1} = fullfile(Settings.outpath, sprintf('Video_%02d',i+nvids));
+        ExportNames{i,1} = fullfile(Settings.outpath, [Files{i} '_Annotations_Tracker.mat'] );
         
         
         
@@ -42,7 +42,7 @@ if exist(fullfile(Settings.outpath,'Tracked_Videos.mat'), 'file')
     end
 else
     for i = 1:size(Files,1)
-        ExportNames{i,1} = fullfile(Settings.outpath, sprintf('Video_%02d',i));
+        ExportNames{i,1} = fullfile(Settings.outpath, [Files{i} '_Annotations_Tracker.mat'] );
         TotalTime(i,1) = NaN;
         FrameCount(i,1) = NaN;
         FPS(i,1) = NaN;

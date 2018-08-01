@@ -90,7 +90,7 @@ switch(handles.method)
             end
             waitbar(i/size(SummedFrames,1),h,'Detecting Objects - Thresholding')    
         end
-
+        
         close(h)
         
     case 'sequential'

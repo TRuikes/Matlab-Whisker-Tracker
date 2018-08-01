@@ -83,8 +83,8 @@ extension  = Settings.video_extension;
 vid_files = dir(fullfile(PathName,'*',['*' Settings.video_extension]));
 vid_files_here = dir(fullfile(PathName,['*' Settings.video_extension]));
 vid_files = [vid_files;vid_files_here];
-track_files = dir(fullfile(PathName,'*','*_tracked.mat'));
-track_files_here = dir(fullfile(PathName,'*_tracked.mat'));
+track_files = dir(fullfile(PathName,'*','*_Annotations_Tracker.mat'));
+track_files_here = dir(fullfile(PathName,'*_Annotations_Tracker.mat'));
 track_files = [track_files; track_files_here];
 
 for i = 1:length(vid_files)
@@ -124,6 +124,7 @@ for i = 1:length(vid_files)
         handles.listbox1.String{end+1} = disp_names{i};
     end
 end
+
 handles.listbox1.Max = 100;
 handles.listbox2.Max = 100;
 
